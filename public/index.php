@@ -9,8 +9,9 @@ if (php_sapi_name() === 'cli-server') {
 }
 
 require_once __DIR__ . '/../vendor/autoload.php';
+
+// Load routes
 require_once __DIR__ . '/../routes/web.php';
 
-use App\core\App;
-
-$app = new App();
+// Resolve the current route
+echo App\core\Router::resolve();

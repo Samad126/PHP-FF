@@ -1,5 +1,10 @@
 RewriteEngine On
 RewriteBase /
+
+# Allow direct access to assets
+RewriteCond %{REQUEST_URI} !^/assets/
+# Allow direct access to existing files
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
+# Route everything else through index.php
 RewriteRule ^(.*)$ index.php?url=$1 [QSA,L]
