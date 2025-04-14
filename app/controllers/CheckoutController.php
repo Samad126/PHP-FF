@@ -20,10 +20,11 @@ class CheckoutController extends Controller
     public function index()
     {
         $cart = Cart::getItems();
-        if (empty($cart)) {
-            header('Location: /cart');
-            exit;
-        }
+
+        // if (empty($cart)) {
+        //     header('Location: /cart');
+        //     exit;
+        // }
 
         $subtotal = Cart::getSubtotal();
         $shipping = Cart::calculateShipping();
