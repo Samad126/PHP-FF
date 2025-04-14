@@ -30,7 +30,7 @@
                                 <!-- product -->
                                 <div class="product">
                                     <div class="product-img">
-                                        <img src="./assets/img/product06.png" alt="">
+                                        <img src="/assets/img/product06.png" alt="">
                                         <div class="product-label">
                                             <span class="sale">-30%</span>
                                             <span class="new">NEW</span>
@@ -67,7 +67,7 @@
                                 <!-- product -->
                                 <div class="product">
                                     <div class="product-img">
-                                        <img src="./assets/img/product07.png" alt="">
+                                        <img src="/assets/img/product07.png" alt="">
                                         <div class="product-label">
                                             <span class="new">NEW</span>
                                         </div>
@@ -103,7 +103,7 @@
                                 <!-- product -->
                                 <div class="product">
                                     <div class="product-img">
-                                        <img src="./assets/img/product08.png" alt="">
+                                        <img src="/assets/img/product08.png" alt="">
                                         <div class="product-label">
                                             <span class="sale">-30%</span>
                                         </div>
@@ -134,7 +134,7 @@
                                 <!-- product -->
                                 <div class="product">
                                     <div class="product-img">
-                                        <img src="./assets/img/product09.png" alt="">
+                                        <img src="/assets/img/product09.png" alt="">
                                     </div>
                                     <div class="product-body">
                                         <p class="product-category">Category</p>
@@ -167,7 +167,7 @@
                                 <!-- product -->
                                 <div class="product">
                                     <div class="product-img">
-                                        <img src="./assets/img/product01.png" alt="">
+                                        <img src="/assets/img/product01.png" alt="">
                                     </div>
                                     <div class="product-body">
                                         <p class="product-category">Category</p>
