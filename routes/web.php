@@ -20,7 +20,7 @@ Router::get('/', [HomeController::class, 'index']);
 
 // Product routes
 Router::get('/products', [ProductController::class, 'index']);
-Router::get('/product/{id}', [ProductController::class, 'show']);
+Router::get('/products/{id}', [ProductController::class, 'show']);
 
 // Cart routes
 Router::get('/cart', [CartController::class, 'index']);
