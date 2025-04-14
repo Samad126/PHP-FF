@@ -5,7 +5,7 @@
             <img src="<?= $product['image'] ?>" alt="">
             <h3><?= $product['name'] ?></h3>
             <p>$<?= $product['price'] ?></p>
-            <a href="/product/show/<?= $product['id'] ?>">View</a>
+            <a href="/product/<?= $product['id'] ?>">View</a>
         </div>
     <?php endforeach; ?>
 </div>

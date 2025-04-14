@@ -16,6 +16,11 @@ class ProductController extends Controller
     public function show($id)
     {
         $product = Product::find($id);
+        if (!$product) {
+            http_response_code(404);
+            return $this->view("404");
+        }
+        
         $related = Product::getRelated($id);
         $this->view("product-details", compact('product', 'related'));
     }
