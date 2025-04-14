@@ -1,11 +1,15 @@
-<h1>New Products</h1>
-<div class="product-grid">
-    <?php foreach ($products as $product): ?>
-        <div class="product-card">
-            <img src="<?= $product['image'] ?>" alt="">
-            <h3><?= $product['name'] ?></h3>
-            <p>$<?= $product['price'] ?></p>
-            <a href="/product/<?= $product['id'] ?>">View</a>
-        </div>
-    <?php endforeach; ?>
-</div>
+<!-- Featured Collections -->
+<?php require_once 'partials/home/featuredCollections.php'; ?>
+<!-- /Featured Collections -->
+
+<!-- SECTION -->
+<?php require_once 'partials/home/newProducts.php'; ?>
+<!-- /SECTION -->
+
+<!-- HOT DEAL SECTION -->
+<?php require_once 'partials/home/hotDeals.php'; ?>
+<!-- /HOT DEAL SECTION -->
+
+<!-- SECTION -->
+<?php require_once 'partials/home/topSelling.php'; ?>
+<!-- /SECTION -->

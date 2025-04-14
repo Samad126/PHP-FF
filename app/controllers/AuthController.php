@@ -26,7 +26,7 @@ class AuthController extends Controller
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             User::create($_POST);
-            header('Location: /auth/login');
+            header('Location: /login');
             exit;
         }
         $this->view('register');
