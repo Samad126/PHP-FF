@@ -5,7 +5,6 @@ use App\controllers\AuthController;
 use App\controllers\HomeController;
 use App\controllers\ProductController;
 use App\controllers\CartController;
-use App\controllers\CategoryController;
 use App\controllers\WishlistController;
 
 // Auth routes
@@ -26,9 +25,6 @@ Router::get('/products/{id}', [ProductController::class, 'show']);
 Router::get('/cart', [CartController::class, 'index']);
 Router::post('/cart/add/{id}', [CartController::class, 'add']);
 Router::post('/cart/remove/{id}', [CartController::class, 'remove']);
-
-// Category routes
-Router::get('/category/{name}', [CategoryController::class, 'index']);
 
 // Wishlist routes
 Router::get('/wishlist', [WishlistController::class, 'index']);

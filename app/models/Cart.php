@@ -2,6 +2,7 @@
 
 namespace App\models;
 
+use App\core\Auth;
 use App\core\Model;
 
 class Cart extends Model
@@ -9,7 +10,7 @@ class Cart extends Model
     public static function add($productId)
     {
         $stmt = self::db()->prepare("INSERT INTO cart (user_id, product_id, quantity) VALUES (?, ?, 1)");
-        $stmt->execute([1, $productId]); // replace 1 with actual user ID
+        $stmt->execute([1, $productId]);
     }
 
     public static function getItems()
@@ -23,5 +24,29 @@ class Cart extends Model
     {
         $stmt = self::db()->prepare("DELETE FROM cart WHERE user_id = ? AND product_id = ?");
         $stmt->execute([1, $productId]);
+    }
+
+    public static function getSubtotal()
+    {
+        $items = self::getItems();
+        return array_reduce($items, function($carry, $item) {
+            return $carry + ($item['price'] * $item['quantity']);
+        }, 0);
+    }
+
+    public static function calculateShipping()
+    {
+        return 0;
+    }
+
+    public static function getTotal()
+    {
+        return self::getSubtotal() + self::calculateShipping();
+    }
+
+    public static function clear()
+    {
+        $stmt = self::db()->prepare("DELETE FROM cart WHERE user_id = ?");
+        $stmt->execute([Auth::user()['id']]);
     }
 }
