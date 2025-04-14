@@ -1,0 +1,11 @@
+{
+    "name": "phpff/ecommerce-app",
+    "description": "A simple PHP MVC e-commerce app",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/"
+        }
+    },
+    "require": {}
+}
