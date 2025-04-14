@@ -22,6 +22,7 @@ class ProductController extends Controller
         }
         
         $related = Product::getRelated($id);
-        $this->view("product-details", compact('product', 'related'));
+        
+        $this->view("productDetails", compact('product', 'related'));
     }
 }
