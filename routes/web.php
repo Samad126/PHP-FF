@@ -35,3 +35,5 @@ Router::post('/wishlist/remove/{id}', [WishlistController::class, 'remove']);
 // Checkout routes
 Router::get('/checkout', [CheckoutController::class, 'index']);
 Router::post('/checkout/process', [CheckoutController::class, 'process']);
+
+//fghfsdhgjdfghj
