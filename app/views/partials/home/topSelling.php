@@ -10,7 +10,7 @@
                     <h3 class="title">Top selling</h3>
                     <div class="section-nav">
                         <ul class="section-tab-nav tab-nav">
-                            <li class="active"><a data-toggle="tab" href="#tab1">View All</a></li>
+                            <li class="active"><a href="/products">View All</a></li>
                         </ul>
                     </div>
                 </div>
@@ -35,7 +35,7 @@
                                     </div>
                                     <div class="product-body">
                                         <p class="product-category">Category</p>
-                                        <h3 class="product-name"><a href="#">product name goes here</a></h3>
+                                        <h3 class="product-name"><a href="/products/2">product name goes here</a></h3>
                                         <h4 class="product-price">$980.00 <del class="product-old-price">$990.00</del>
                                         </h4>
                                         <div class="product-rating">
@@ -71,7 +71,7 @@
                                     </div>
                                     <div class="product-body">
                                         <p class="product-category">Category</p>
-                                        <h3 class="product-name"><a href="#">product name goes here</a></h3>
+                                        <h3 class="product-name"><a href="/products/2">product name goes here</a></h3>
                                         <h4 class="product-price">$980.00 <del class="product-old-price">$990.00</del>
                                         </h4>
                                         <div class="product-rating">
@@ -107,7 +107,7 @@
                                     </div>
                                     <div class="product-body">
                                         <p class="product-category">Category</p>
-                                        <h3 class="product-name"><a href="#">product name goes here</a></h3>
+                                        <h3 class="product-name"><a href="/products/2">product name goes here</a></h3>
                                         <h4 class="product-price">$980.00 <del class="product-old-price">$990.00</del>
                                         </h4>
                                         <div class="product-rating">
@@ -135,7 +135,7 @@
                                     </div>
                                     <div class="product-body">
                                         <p class="product-category">Category</p>
-                                        <h3 class="product-name"><a href="#">product name goes here</a></h3>
+                                        <h3 class="product-name"><a href="/products/2">product name goes here</a></h3>
                                         <h4 class="product-price">$980.00 <del class="product-old-price">$990.00</del>
                                         </h4>
                                         <div class="product-rating">
@@ -168,7 +168,7 @@
                                     </div>
                                     <div class="product-body">
                                         <p class="product-category">Category</p>
-                                        <h3 class="product-name"><a href="#">product name goes here</a></h3>
+                                        <h3 class="product-name"><a href="/products/2">product name goes here</a></h3>
                                         <h4 class="product-price">$980.00 <del class="product-old-price">$990.00</del>
                                         </h4>
                                         <div class="product-rating">
