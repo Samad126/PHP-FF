@@ -12,8 +12,9 @@
     <!-- Google font -->
     <link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,700" rel="stylesheet">
 
-    <!-- Bootstrap -->
     <link type="text/css" rel="stylesheet" href="/assets/css/bootstrap.min.css" />
+    <!-- Bootstrap 5 CSS -->
+    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"> -->
 
     <!-- Slick -->
     <link type="text/css" rel="stylesheet" href="/assets/css/slick.css" />
