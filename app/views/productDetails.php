@@ -1,7 +1,3 @@
-<!-- BREADCRUMB -->
-<?php include_once 'partials/productDetails/breadcrumb.php'; ?>
-<!-- /BREADCRUMB -->
-
 <!-- Main Part -->
 <div class="section">
     <!-- container -->

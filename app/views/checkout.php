@@ -1,7 +1,3 @@
-<!-- BREADCRUMB -->
-<?php include_once 'partials/checkout/breadcrumb.php'; ?>
-<!-- /BREADCRUMB -->
-
 <!-- SECTION -->
 <div class="section">
     <!-- container -->
