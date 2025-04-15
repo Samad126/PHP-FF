@@ -131,12 +131,17 @@
             <!-- responsive-nav -->
             <div id="responsive-nav">
                 <!-- NAV -->
+                <?php
+                $currentPath = $_SERVER['REQUEST_URI'] ?? '/';
+                $currentPath = parse_url($currentPath, PHP_URL_PATH);
+                ?>
                 <ul class="main-nav nav navbar-nav">
-                    <li class="active"><a href="#">Home</a></li>
-                    <li><a href="#">Laptops</a></li>
-                    <li><a href="#">Smartphones</a></li>
-                    <li><a href="#">Cameras</a></li>
-                    <li><a href="#">Accessories</a></li>
+                    <li class="<?= $currentPath === '/' ? 'active' : '' ?>">
+                        <a href="/">Home</a>
+                    </li>
+                    <li class="<?= $currentPath === '/products' ? 'active' : '' ?>">
+                        <a href="/products">Products</a>
+                    </li>
                 </ul>
                 <!-- /NAV -->
             </div>
