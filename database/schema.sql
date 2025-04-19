@@ -1,132 +1,128 @@
--- 1) Create the database
+-- Create the database
 CREATE DATABASE IF NOT EXISTS `ecommerce` CHARACTER
 SET
-    utf8mb4 COLLATE utf8mb4_unicode_ci;
+    = utf8mb4 COLLATE = utf8mb4_unicode_ci;
 
 USE `ecommerce`;
 
--- 2) Users
+-- Users table
 CREATE TABLE
     `users` (
-        `id` BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-        `name` VARCHAR(100) NOT NULL,
+        `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
         `email` VARCHAR(255) NOT NULL UNIQUE,
-        `password` VARCHAR(255) NOT NULL,
-        `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        `password_hash` CHAR(60) NOT NULL,
+        `first_name` VARCHAR(50),
+        `last_name` VARCHAR(50),
+        `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
     ) ENGINE = InnoDB;
 
--- 3) Categories
+-- Categories table
 CREATE TABLE
     `categories` (
         `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
         `name` VARCHAR(100) NOT NULL UNIQUE,
-        `description` TEXT,
-        `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        `parent_id` INT UNSIGNED NULL,
+        FOREIGN KEY (`parent_id`) REFERENCES `categories` (`id`) ON DELETE SET NULL
     ) ENGINE = InnoDB;
 
--- 4) Brands (belong to categories)
+-- Brands table (each brand belongs to a category)
 CREATE TABLE
     `brands` (
         `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-        `category_id` INT UNSIGNED NOT NULL,
         `name` VARCHAR(100) NOT NULL,
-        `description` TEXT,
-        `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        UNIQUE KEY `ux_brands_category_name` (`category_id`, `name`),
-        FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+        `category_id` INT UNSIGNED NOT NULL,
+        FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE CASCADE,
+        UNIQUE KEY `uniq_brand_in_category` (`category_id`, `name`)
     ) ENGINE = InnoDB;
 
--- 5) Products
+-- Products table (with image URLs)
 CREATE TABLE
     `products` (
-        `id` BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-        `category_id` INT UNSIGNED NOT NULL,
-        `brand_id` INT UNSIGNED NOT NULL,
+        `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
         `name` VARCHAR(255) NOT NULL,
         `description` TEXT,
         `price` DECIMAL(10, 2) NOT NULL,
-        `stock` INT UNSIGNED NOT NULL DEFAULT 0,
-        `status` ENUM ('active', 'inactive') NOT NULL DEFAULT 'active',
-        `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-        INDEX (`category_id`),
-        INDEX (`brand_id`),
-        FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
-        FOREIGN KEY (`brand_id`) REFERENCES `brands` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
+        `brand_id` INT UNSIGNED NOT NULL,
+        `category_id` INT UNSIGNED NOT NULL,
+        `image_url` VARCHAR(512),
+        `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        FOREIGN KEY (`brand_id`) REFERENCES `brands` (`id`) ON DELETE RESTRICT,
+        FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE RESTRICT
     ) ENGINE = InnoDB;
 
--- 6) Addresses
+-- Wishlist table
+CREATE TABLE
+    `wishlists` (
+        `user_id` INT UNSIGNED NOT NULL,
+        `product_id` INT UNSIGNED NOT NULL,
+        `added_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (`user_id`, `product_id`),
+        FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+        FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE
+    ) ENGINE = InnoDB;
+
+-- Cart table
+CREATE TABLE
+    `carts` (
+        `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+        `user_id` INT UNSIGNED NOT NULL,
+        `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+    ) ENGINE = InnoDB;
+
+CREATE TABLE
+    `cart_items` (
+        `cart_id` INT UNSIGNED NOT NULL,
+        `product_id` INT UNSIGNED NOT NULL,
+        `quantity` INT UNSIGNED NOT NULL DEFAULT 1,
+        PRIMARY KEY (`cart_id`, `product_id`),
+        FOREIGN KEY (`cart_id`) REFERENCES `carts` (`id`) ON DELETE CASCADE,
+        FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE
+    ) ENGINE = InnoDB;
+
+-- Addresses table
 CREATE TABLE
     `addresses` (
-        `id` BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-        `user_id` BIGINT UNSIGNED NOT NULL,
-        `address_line1` VARCHAR(255) NOT NULL,
-        `address_line2` VARCHAR(255),
+        `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+        `user_id` INT UNSIGNED NOT NULL,
+        `line1` VARCHAR(255) NOT NULL,
+        `line2` VARCHAR(255),
         `city` VARCHAR(100) NOT NULL,
         `state` VARCHAR(100),
-        `postal_code` VARCHAR(20),
+        `postal_code` VARCHAR(20) NOT NULL,
         `country` VARCHAR(100) NOT NULL,
-        `phone` VARCHAR(20),
         `is_default` TINYINT (1) NOT NULL DEFAULT 0,
-        `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-        INDEX (`user_id`),
-        FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+        FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
     ) ENGINE = InnoDB;
 
--- 7) Wishlist (one row per user–product)
-CREATE TABLE
-    `wishlist` (
-        `user_id` BIGINT UNSIGNED NOT NULL,
-        `product_id` BIGINT UNSIGNED NOT NULL,
-        `added_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        PRIMARY KEY (`user_id`, `product_id`),
-        INDEX (`product_id`),
-        FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-        FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-    ) ENGINE = InnoDB;
-
--- 8) Cart (one row per user–product, with quantity)
-CREATE TABLE
-    `cart` (
-        `user_id` BIGINT UNSIGNED NOT NULL,
-        `product_id` BIGINT UNSIGNED NOT NULL,
-        `quantity` INT UNSIGNED NOT NULL DEFAULT 1,
-        `added_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        PRIMARY KEY (`user_id`, `product_id`),
-        INDEX (`product_id`),
-        FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-        FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-    ) ENGINE = InnoDB;
-
--- 9) Orders
+-- Orders and Order Items
 CREATE TABLE
     `orders` (
-        `id` BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-        `user_id` BIGINT UNSIGNED NOT NULL,
-        `address_id` BIGINT UNSIGNED NOT NULL,
+        `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+        `user_id` INT UNSIGNED NOT NULL,
+        `address_id` INT UNSIGNED NOT NULL,
+        `status` ENUM (
+            'pending',
+            'paid',
+            'shipped',
+            'completed',
+            'cancelled'
+        ) NOT NULL DEFAULT 'pending',
         `total_amount` DECIMAL(10, 2) NOT NULL,
-        `status` ENUM ('pending', 'processing', 'completed', 'cancelled') NOT NULL DEFAULT 'pending',
-        `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-        INDEX (`user_id`),
-        INDEX (`address_id`),
-        FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-        FOREIGN KEY (`address_id`) REFERENCES `addresses` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+        `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+        FOREIGN KEY (`address_id`) REFERENCES `addresses` (`id`) ON DELETE RESTRICT
     ) ENGINE = InnoDB;
 
--- 10) Order Items
 CREATE TABLE
     `order_items` (
-        `id` BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-        `order_id` BIGINT UNSIGNED NOT NULL,
-        `product_id` BIGINT UNSIGNED NOT NULL,
-        `quantity` INT UNSIGNED NOT NULL DEFAULT 1,
-        `price` DECIMAL(10, 2) NOT NULL, -- snapshot of price at purchase time
-        `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        INDEX (`order_id`),
-        INDEX (`product_id`),
-        FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-        FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
+        `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+        `order_id` INT UNSIGNED NOT NULL,
+        `product_id` INT UNSIGNED NOT NULL,
+        `quantity` INT UNSIGNED NOT NULL,
+        `unit_price` DECIMAL(10, 2) NOT NULL,
+        FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE,
+        FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE RESTRICT
     ) ENGINE = InnoDB;
