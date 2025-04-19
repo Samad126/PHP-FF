@@ -2189,3 +2189,32 @@ textarea.input {
   }
 }
 
+/* Add these rules to your existing CSS */
+.product-preview {
+    position: relative;
+    aspect-ratio: 1/1; /* maintains square ratio */
+    overflow: hidden;
+}
+
+.product-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* maintains aspect ratio */
+    transition: transform 0.3s ease;
+}
+
+/* Prevent FOUC (Flash of Unstyled Content) */
+.products-slick,
+.products-widget-slick,
+#product-imgs,
+#product-main-img {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease;
+}
+
+.slick-initialized {
+    opacity: 1;
+    visibility: visible;
+}
+
