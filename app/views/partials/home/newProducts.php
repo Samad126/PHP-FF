@@ -53,9 +53,10 @@
                                             <?php endfor; ?>
                                         </div>
                                         <div class="product-btns">
-                                            <button class="add-to-wishlist" onclick="addToWishlist(<?= $product['id'] ?>)">
-                                                <i class="fa fa-heart-o"></i>
-                                                <span class="tooltipp">add to wishlist</span>
+                                            <button class="add-to-wishlist <?= in_array($product['id'], $wishlistItems) ? 'in-wishlist' : '' ?>" 
+                                                    onclick="toggleWishlist(<?= $product['id'] ?>)">
+                                                <i class="fa fa-<?= in_array($product['id'], $wishlistItems) ? 'heart' : 'heart-o' ?>"></i>
+                                                <span class="tooltipp"><?= in_array($product['id'], $wishlistItems) ? 'remove from wishlist' : 'add to wishlist' ?></span>
                                             </button>
                                             <button class="add-to-compare">
                                                 <i class="fa fa-exchange"></i>
@@ -68,9 +69,15 @@
                                         </div>
                                     </div>
                                     <div class="add-to-cart">
-                                        <button class="add-to-cart-btn" onclick="addToCart(<?= $product['id'] ?>)">
-                                            <i class="fa fa-shopping-cart"></i> add to cart
-                                        </button>
+                                        <?php if (in_array($product['id'], $cartItems)): ?>
+                                            <button class="add-to-cart-btn in-cart" disabled>
+                                                <i class="fa fa-shopping-cart"></i> In Cart
+                                            </button>
+                                        <?php else: ?>
+                                            <button class="add-to-cart-btn" onclick="addToCart(<?= $product['id'] ?>)">
+                                                <i class="fa fa-shopping-cart"></i> add to cart
+                                            </button>
+                                        <?php endif; ?>
                                     </div>
                                 </div>
                                 <!-- /product -->

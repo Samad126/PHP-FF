@@ -56,9 +56,27 @@ class WishlistController extends Controller
     {
         try {
             Wishlist::remove($productId);
+            
+            if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest') {
+                echo json_encode([
+                    'success' => true,
+                    'message' => 'Product removed from wishlist successfully'
+                ]);
+                exit;
+            }
+            
             header("Location: /wishlist");
             exit;
         } catch (\Exception $e) {
+            if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest') {
+                http_response_code(400);
+                echo json_encode([
+                    'success' => false,
+                    'message' => $e->getMessage()
+                ]);
+                exit;
+            }
+            
             header("Location: /login?redirect=/wishlist");
             exit;
         }

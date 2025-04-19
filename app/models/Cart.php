@@ -52,7 +52,7 @@ class Cart extends Model
         $userId = Auth::user()['id'];
         
         $stmt = self::db()->prepare(
-            "SELECT p.*, ci.quantity 
+            "SELECT p.id, p.name, p.price, ci.quantity 
              FROM carts c 
              JOIN cart_items ci ON c.id = ci.cart_id 
              JOIN products p ON ci.product_id = p.id 

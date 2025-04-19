@@ -6,11 +6,23 @@ use App\core\Controller;
 use App\models\Product;
 use App\models\Category;
 use App\models\Brand;
+use App\models\Wishlist;
+use App\models\Cart;
+use App\core\Auth;
 
 class ProductController extends Controller
 {
     public function index()
     {
+        // Get cart items
+        $cartItems = [];
+        if (Auth::check()) {
+            $cartProducts = Cart::getItems();
+            $cartItems = array_map(function($item) {
+                return (int)$item['id']; // Ensure IDs are integers
+            }, $cartProducts);
+        }
+
         $filters = [
             'q' => isset($_GET['q']) ? trim($_GET['q']) : null,
             'category' => $_GET['category'] ?? null,
@@ -28,6 +40,8 @@ class ProductController extends Controller
         $topSellingProducts = Product::getTopSelling(3);
         $priceRange = Product::getPriceRange();
 
+        $wishlistItems = Auth::check() ? array_column(Wishlist::getItems(), 'product_id') : [];
+
         $this->view("products", [
             'products' => $products['items'],
             'total' => $products['total'],
@@ -35,7 +49,9 @@ class ProductController extends Controller
             'brands' => $brands,
             'filters' => $filters,
             'topSellingProducts' => $topSellingProducts,
-            'priceRange' => $priceRange
+            'priceRange' => $priceRange,
+            'wishlistItems' => $wishlistItems,
+            'cartItems' => $cartItems
         ]);
     }
 

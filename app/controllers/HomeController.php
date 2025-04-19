@@ -4,18 +4,34 @@ namespace App\controllers;
 
 use App\core\Controller;
 use App\models\Product;
+use App\models\Wishlist;
+use App\models\Cart;
+use App\core\Auth;
 
 class HomeController extends Controller
 {
     public function index()
     {
-        $featuredProducts = Product::getFeatured();
-        $newProducts = Product::getNewProducts();
         $topSellingProducts = Product::getTopSelling();
-        $this->view("home", [
-            'products' => $featuredProducts,
+        $newProducts = Product::getNewProducts(); // Changed from getNew() to getNewProducts()
+        
+        // Get cart items
+        $cartItems = [];
+        if (Auth::check()) {
+            $cartProducts = Cart::getItems();
+            $cartItems = array_map(function($item) {
+                return (int)$item['id'];
+            }, $cartProducts);
+        }
+
+        // Get wishlist items
+        $wishlistItems = Auth::check() ? array_column(Wishlist::getItems(), 'product_id') : [];
+
+        $this->view('home', [
+            'topSellingProducts' => $topSellingProducts,
             'newProducts' => $newProducts,
-            'topSellingProducts' => $topSellingProducts
+            'cartItems' => $cartItems,
+            'wishlistItems' => $wishlistItems
         ]);
     }
 }

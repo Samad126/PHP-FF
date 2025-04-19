@@ -198,24 +198,36 @@
 
 })(jQuery);
 
-function addToWishlist(productId) {
-    fetch(`/wishlist/add/${productId}`, {
+function toggleWishlist(productId) {
+    const button = event.currentTarget;
+    const isInWishlist = button.classList.contains('in-wishlist');
+    const endpoint = isInWishlist ? 'remove' : 'add';
+
+    fetch(`/wishlist/${endpoint}/${productId}`, {
         method: 'POST',
         headers: {
             'X-Requested-With': 'XMLHttpRequest'
         }
     })
-    .then(response => response.json().then(data => ({status: response.status, data})))
-    .then(({status, data}) => {
-        if (status === 200 && data.success) {
-            showNotification(data.message || 'Product added to wishlist!', 'success');
-        } else {
-            showNotification(data.message || 'Failed to add product to wishlist', 'error');
-            // if (status === 401) {
-            //     setTimeout(() => {
-            //         window.location.href = '/login?redirect=' + encodeURIComponent(window.location.pathname);
-            //     }, 2000);
-            // }
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update ALL matching wishlist buttons for this product across all sections
+            const buttons = document.querySelectorAll(`.add-to-wishlist[onclick="toggleWishlist(${productId})"]`);
+            buttons.forEach(btn => {
+                btn.classList.toggle('in-wishlist');
+                const btnIcon = btn.querySelector('i');
+                const btnTooltip = btn.querySelector('.tooltipp');
+                if (btnIcon) {
+                    btnIcon.classList.toggle('fa-heart-o');
+                    btnIcon.classList.toggle('fa-heart');
+                }
+                if (btnTooltip) {
+                    btnTooltip.textContent = isInWishlist ? 'add to wishlist' : 'remove from wishlist';
+                }
+            });
+            
+            showNotification(data.message, 'success');
         }
     })
     .catch(error => {
@@ -234,18 +246,27 @@ function addToCart(productId) {
     .then(response => response.json().then(data => ({status: response.status, data})))
     .then(({status, data}) => {
         if (status === 200 && data.success) {
-            showNotification(data.message || 'Product added to cart!', 'success');
-            // Update cart count if available
+            // Update cart count in header
             if (data.cartCount !== undefined) {
                 updateCartCount(data.cartCount);
             }
+            
+            // Update ALL matching add to cart buttons for this product across all sections
+            const containers = document.querySelectorAll(`.add-to-cart button[onclick="addToCart(${productId})"]`);
+            containers.forEach(button => {
+                const container = button.closest('.add-to-cart');
+                if (container) {
+                    container.innerHTML = `
+                        <button class="add-to-cart-btn in-cart" disabled>
+                            <i class="fa fa-shopping-cart"></i> In Cart
+                        </button>
+                    `;
+                }
+            });
+            
+            showNotification(data.message || 'Product added to cart!', 'success');
         } else {
             showNotification(data.message || 'Failed to add product to cart', 'error');
-            // if (status === 401) {
-            //     setTimeout(() => {
-            //         window.location.href = '/login?redirect=' + encodeURIComponent(window.location.pathname);
-            //     }, 2000);
-            // }
         }
     })
     .catch(error => {
