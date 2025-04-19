@@ -28,16 +28,20 @@
     <div class="aside">
         <h3 class="aside-title">Price</h3>
         <div class="price-filter">
-            <div id="price-slider"></div>
+            <div id="price-slider" data-max-price="<?= $priceRange['max'] ?>"></div>
             <div class="input-number price-min">
-                <input id="price-min" type="number" value="<?= $filters['price_min'] ?? '' ?>"
+                <input id="price-min" type="number" 
+                       value="<?= $filters['price_min'] ?? $priceRange['min'] ?>"
+                       min="0" max="<?= $priceRange['max'] ?>"
                        onchange="updateFilters('price_min', this.value)">
                 <span class="qty-up">+</span>
                 <span class="qty-down">-</span>
             </div>
             <span>-</span>
             <div class="input-number price-max">
-                <input id="price-max" type="number" value="<?= $filters['price_max'] ?? '' ?>"
+                <input id="price-max" type="number" 
+                       value="<?= $filters['price_max'] ?? $priceRange['max'] ?>"
+                       min="0" max="<?= $priceRange['max'] ?>"
                        onchange="updateFilters('price_max', this.value)">
                 <span class="qty-up">+</span>
                 <span class="qty-down">-</span>

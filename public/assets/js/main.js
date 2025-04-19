@@ -150,9 +150,10 @@
 	$(document).ready(function() {
 		var priceSlider = document.getElementById('price-slider');
 		if (priceSlider) {
-			// Get initial values from inputs
+			// Get initial values from inputs and data attributes
 			var minPrice = parseInt($('#price-min').val()) || 0;
-			var maxPrice = parseInt($('#price-max').val()) || 1000;
+			var maxPrice = parseInt($('#price-max').val()) || parseInt(priceSlider.dataset.maxPrice);
+			var absoluteMax = parseInt(priceSlider.dataset.maxPrice);
 
 			noUiSlider.create(priceSlider, {
 				start: [minPrice, maxPrice],
@@ -160,7 +161,7 @@
 				step: 1,
 				range: {
 					'min': 0,
-					'max': 1000
+					'max': absoluteMax
 				}
 			});
 
@@ -191,32 +192,6 @@
 
 			$('#price-max').on('change', function() {
 				priceSlider.noUiSlider.set([null, this.value]);
-			});
-
-			// Handle qty up/down buttons
-			$('.input-number').each(function() {
-				var $this = $(this),
-					$input = $this.find('input[type="number"]'),
-					up = $this.find('.qty-up'),
-					down = $this.find('.qty-down');
-
-				down.on('click', function() {
-					var value = parseInt($input.val()) - 1;
-					value = value < 0 ? 0 : value;
-					$input.val(value);
-					if ($input.attr('id') === 'price-min') {
-						priceSlider.noUiSlider.set([value, null]);
-					}
-				});
-
-				up.on('click', function() {
-					var value = parseInt($input.val()) + 1;
-					value = value > 1000 ? 1000 : value;
-					$input.val(value);
-					if ($input.attr('id') === 'price-max') {
-						priceSlider.noUiSlider.set([null, value]);
-					}
-				});
 			});
 		}
 	});

@@ -12,7 +12,7 @@ class ProductController extends Controller
     public function index()
     {
         $filters = [
-            'q' => isset($_GET['q']) ? trim($_GET['q']) : null,  // Make sure we capture the search query
+            'q' => isset($_GET['q']) ? trim($_GET['q']) : null,
             'category' => $_GET['category'] ?? null,
             'brand' => $_GET['brand'] ?? null,
             'price_min' => $_GET['price_min'] ?? null,
@@ -25,15 +25,17 @@ class ProductController extends Controller
         $products = Product::getFiltered($filters);
         $categories = Category::getAllWithCount();
         $brands = Brand::getAllWithCount();
-        $topSellingProducts = Product::getTopSelling(3); // Get top 3 selling products for sidebar
+        $topSellingProducts = Product::getTopSelling(3);
+        $priceRange = Product::getPriceRange();
 
         $this->view("products", [
             'products' => $products['items'],
             'total' => $products['total'],
             'categories' => $categories,
             'brands' => $brands,
-            'filters' => $filters,  // Pass filters to view
-            'topSellingProducts' => $topSellingProducts
+            'filters' => $filters,
+            'topSellingProducts' => $topSellingProducts,
+            'priceRange' => $priceRange
         ]);
     }
 

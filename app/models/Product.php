@@ -165,4 +165,32 @@ class Product extends Model
             'total_pages' => ceil($total / $perPage)
         ];
     }
+
+    public static function getPriceRange()
+    {
+        $stmt = self::db()->prepare("
+            SELECT 
+                MAX(price) as max_price
+            FROM products
+            WHERE price > 0
+        ");
+        $stmt->execute();
+        $range = $stmt->fetch(\PDO::FETCH_ASSOC);
+        
+        $maxPrice = (int)$range['max_price'];
+        
+        // Round up max price to make it more user-friendly
+        if ($maxPrice > 10000) {
+            // Round to nearest thousand for very high prices
+            $maxPrice = ceil($maxPrice / 1000) * 1000;
+        } else {
+            // Round to nearest hundred for moderate prices
+            $maxPrice = ceil($maxPrice / 100) * 100;
+        }
+        
+        return [
+            'min' => 0, // Always start from 0
+            'max' => $maxPrice
+        ];
+    }
 }
