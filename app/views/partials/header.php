@@ -34,8 +34,8 @@
                     <!-- SEARCH BAR -->
                     <div class="col-md-6">
                         <div class="header-search">
-                            <form>
-                                <input class="input" placeholder="Search here" style="border-radius: 40px 0px 0px 40px;">
+                            <form action="/products">
+                                <input class="input" name="q" placeholder="Search here" style="border-radius: 40px 0px 0px 40px;">
                                 <button class="search-btn">Search</button>
                             </form>
                         </div>
@@ -50,14 +50,20 @@
                                 <a href="/wishlist">
                                     <i class="fa fa-heart-o"></i>
                                     <span>Your Wishlist</span>
-                                    <div class="qty">2</div>
+                                    <?php
+                                    $wishlistCount = \App\models\Wishlist::getItems() ? count(\App\models\Wishlist::getItems()) : 0;
+                                    ?>
+                                    <div class="qty"><?= $wishlistCount ?></div>
                                 </a>
                             </div>
                             <div>
                                 <a href="/cart">
                                     <i class="fa fa-shopping-cart"></i>
                                     <span>Your Cart</span>
-                                    <div class="qty">3</div>
+                                    <?php
+                                    $cartCount = \App\models\Cart::getItems() ? count(\App\models\Cart::getItems()) : 0;
+                                    ?>
+                                    <div class="qty cart-count"><?= $cartCount ?></div>
                                 </a>
                             </div>
                             <!-- /Wishlist -->

@@ -4,10 +4,14 @@ namespace App\core;
 
 class Controller
 {
-    public function view($view, $data = [], $title = null)
+    protected function view($view, $data = [])
     {
+        // Add cart and wishlist counts to all views
+        $data['cartCount'] = \App\models\Cart::getItems() ? count(\App\models\Cart::getItems()) : 0;
+        $data['wishlistCount'] = \App\models\Wishlist::getItems() ? count(\App\models\Wishlist::getItems()) : 0;
+        
+        $viewPath = "../app/views/$view.php";
         extract($data);
-        $viewPath = "../app/views/{$view}.php";
-        require_once "../app/views/layout.php";
+        require "../app/views/layout.php";
     }
 }
