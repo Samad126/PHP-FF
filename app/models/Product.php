@@ -37,7 +37,8 @@ class Product extends Model
     public static function getNewProducts($limit = 8)
     {
         $sql = "SELECT p.*, b.name as brand_name, c.name as category_name,
-                pi.image_url as image_url
+                pi.image_url as image_url, 
+                p.stock > 0 as in_stock
                 FROM products p 
                 LEFT JOIN brands b ON p.brand_id = b.id 
                 LEFT JOIN categories c ON p.category_id = c.id
@@ -57,7 +58,8 @@ class Product extends Model
         $limit = (int)$limit; // Sanitize the limit
         $stmt = self::db()->prepare(
             "SELECT p.*, b.name as brand_name, c.name as category_name,
-             pi.image_url as image_url
+             pi.image_url as image_url,
+             p.stock > 0 as in_stock
              FROM products p 
              LEFT JOIN brands b ON p.brand_id = b.id 
              LEFT JOIN categories c ON p.category_id = c.id 

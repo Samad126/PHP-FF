@@ -30,12 +30,14 @@
                                     <div class="product-img">
                                         <img src="<?= htmlspecialchars($product['image_url'] ?? '/images/placeholder.jpg') ?>" 
                                              alt="<?= htmlspecialchars($product['name']) ?>">
-                                        <?php if (isset($product['discount_percentage']) && $product['discount_percentage'] > 0): ?>
                                         <div class="product-label">
-                                            <span class="sale">-<?= $product['discount_percentage'] ?>%</span>
-                                            <span class="new">NEW</span>
+                                            <?php if (isset($product['discount_percentage']) && $product['discount_percentage'] > 0): ?>
+                                                <span class="sale">-<?= $product['discount_percentage'] ?>%</span>
+                                            <?php endif; ?>
+                                            <?php if (!$product['in_stock']): ?>
+                                                <span class="out-of-stock">OUT OF STOCK</span>
+                                            <?php endif; ?>
                                         </div>
-                                        <?php endif; ?>
                                     </div>
                                     <div class="product-body">
                                         <p class="product-category"><?= htmlspecialchars($product['category_name']) ?></p>
@@ -45,7 +47,7 @@
                                         <h4 class="product-price">
                                             $<?= number_format($product['price'], 2) ?>
                                             <?php if (isset($product['old_price']) && $product['old_price'] > $product['price']): ?>
-                                            <del class="product-old-price">$<?= number_format($product['old_price'], 2) ?></del>
+                                                <del class="product-old-price">$<?= number_format($product['old_price'], 2) ?></del>
                                             <?php endif; ?>
                                         </h4>
                                         <div class="product-rating">
@@ -56,7 +58,7 @@
                                         <div class="product-btns">
                                             <button class="add-to-wishlist <?= in_array($product['id'], $wishlistItems) ? 'in-wishlist' : '' ?>" 
                                                     onclick="toggleWishlist(<?= $product['id'] ?>)">
-                                                <i class="fa fa-<?= in_array($product['id'], $wishlistItems) ? 'heart' : 'heart-o' ?>"></i>
+                                                <i class="fa <?= in_array($product['id'], $wishlistItems) ? 'fa-heart' : 'fa-heart-o' ?>"></i>
                                                 <span class="tooltipp"><?= in_array($product['id'], $wishlistItems) ? 'remove from wishlist' : 'add to wishlist' ?></span>
                                             </button>
                                             <button class="add-to-compare">
@@ -70,7 +72,11 @@
                                         </div>
                                     </div>
                                     <div class="add-to-cart">
-                                        <?php if (in_array($product['id'], $cartItems)): ?>
+                                        <?php if (!$product['in_stock']): ?>
+                                            <button class="add-to-cart-btn" disabled>
+                                                <i class="fa fa-shopping-cart"></i> Out of Stock
+                                            </button>
+                                        <?php elseif (in_array($product['id'], $cartItems)): ?>
                                             <button class="add-to-cart-btn in-cart" disabled>
                                                 <i class="fa fa-shopping-cart"></i> In Cart
                                             </button>
