@@ -30,7 +30,9 @@
                     </div>
                     <div class="product-body">
                         <p class="product-category"><?= htmlspecialchars($product['category_name'] ?? '') ?></p>
-                        <h3 class="product-name"><a href="/products/<?= $product['id'] ?>"><?= htmlspecialchars($product['name'] ?? '') ?></a></h3>
+                        <h3 class="product-name">
+                            <a href="/products/<?= $product['id'] ?>"><?= htmlspecialchars($product['name'] ?? '') ?></a>
+                        </h3>
                         <h4 class="product-price">
                             $<?= number_format($product['price'] ?? 0, 2) ?>
                             <?php if (isset($product['old_price']) && $product['old_price'] > ($product['price'] ?? 0)): ?>
@@ -38,9 +40,13 @@
                             <?php endif; ?>
                         </h4>
                         <div class="product-rating">
-                            <?php for ($i = 1; $i <= 5; $i++): ?>
-                                <i class="fa fa-star<?= $i > ($product['rating'] ?? 0) ? '-o' : '' ?>"></i>
+                            <?php 
+                            $rating = round($product['rating'] ?? 0);
+                            for ($i = 1; $i <= 5; $i++): 
+                            ?>
+                                <i class="fa fa-star<?= $i > $rating ? '-o' : '' ?>"></i>
                             <?php endfor; ?>
+                            <span class="review-count">(<?= (int)($product['review_count'] ?? 0) ?>)</span>
                         </div>
                         <div class="product-btns">
                             <button class="add-to-wishlist <?= in_array($product['id'], $wishlistItems) ? 'in-wishlist' : '' ?>"

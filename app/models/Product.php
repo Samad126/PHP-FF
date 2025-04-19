@@ -148,17 +148,21 @@ class Product extends Model
         $perPage = (int)($filters['per_page'] ?? 20);
         $offset = ($page - 1) * $perPage;
 
-        // Main query with DISTINCT to avoid duplicates
+        // Main query with DISTINCT to avoid duplicates and include review data
         $sql = "SELECT DISTINCT 
             p.*, 
             b.name as brand_name, 
             c.name as category_name, 
-            pi.image_url as image_url
+            pi.image_url as image_url,
+            COALESCE(AVG(r.rating), 0) as rating,
+            COUNT(DISTINCT r.id) as review_count
         FROM products p 
         LEFT JOIN brands b ON p.brand_id = b.id 
         LEFT JOIN categories c ON p.category_id = c.id 
         LEFT JOIN product_images pi ON p.id = pi.product_id AND pi.sort_order = 0
+        LEFT JOIN reviews r ON p.id = r.product_id
         $whereClause 
+        GROUP BY p.id, b.name, c.name, pi.image_url
         ORDER BY $orderBy 
         LIMIT :offset, :per_page";
 
