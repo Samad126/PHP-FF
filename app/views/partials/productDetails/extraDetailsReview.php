@@ -1,4 +1,5 @@
 <?php
+
 use App\models\Review;
 use App\core\Auth;
 
@@ -51,7 +52,7 @@ $avgRating = number_format((float)$stats['avg_rating'], 1);
                                             <?php endfor; ?>
                                         </div>
                                         <div class="rating-progress">
-                                            <?php 
+                                            <?php
                                             $count = $stats[$i . '_star'];
                                             $percentage = $totalReviews > 0 ? ($count / $totalReviews) * 100 : 0;
                                             ?>
@@ -129,19 +130,9 @@ $avgRating = number_format((float)$stats['avg_rating'], 1);
                             <?php if (!Auth::check()): ?>
                                 <p>Please <a href="/login?redirect=<?= urlencode($_SERVER['REQUEST_URI']) ?>">login</a> to submit a review.</p>
                             <?php else: ?>
-                                <?php 
-                                $userReview = null;
-                                foreach ($reviews as $review) {
-                                    if ($review['user_id'] === Auth::user()['id']) {
-                                        $userReview = $review;
-                                        break;
-                                    }
-                                }
-                                ?>
-                                
                                 <form class="review-form" action="/reviews/<?= $userReview ? 'edit/' . $userReview['id'] : 'add' ?>" method="POST">
                                     <input type="hidden" name="product_id" value="<?= $product['id'] ?>">
-                                    
+
                                     <?php if ($userReview): ?>
                                         <div class="form-actions-top">
                                             <button type="button" class="btn-edit" onclick="enableReviewEdit()">
@@ -153,30 +144,30 @@ $avgRating = number_format((float)$stats['avg_rating'], 1);
                                         </div>
                                     <?php endif; ?>
 
-                                    <input class="input" 
-                                           type="text" 
-                                           name="title" 
-                                           placeholder="Review Title"
-                                           value="<?= htmlspecialchars($userReview['title'] ?? '') ?>"
-                                           <?= $userReview ? 'disabled' : '' ?>>
+                                    <input class="input"
+                                        type="text"
+                                        name="title"
+                                        placeholder="Review Title"
+                                        value="<?= htmlspecialchars($userReview['title'] ?? '') ?>"
+                                        <?= $userReview ? 'disabled' : '' ?>>
 
-                                    <textarea class="input" 
-                                              name="comment" 
-                                              placeholder="Your Review" 
-                                              required
-                                              <?= $userReview ? 'disabled' : '' ?>><?= htmlspecialchars($userReview['comment'] ?? '') ?></textarea>
+                                    <textarea class="input"
+                                        name="comment"
+                                        placeholder="Your Review"
+                                        required
+                                        <?= $userReview ? 'disabled' : '' ?>><?= htmlspecialchars($userReview['comment'] ?? '') ?></textarea>
 
                                     <div class="input-rating">
                                         <span>Your Rating: </span>
                                         <div class="stars">
                                             <?php for ($i = 5; $i >= 1; $i--): ?>
-                                                <input id="star<?= $i ?>" 
-                                                       name="rating" 
-                                                       value="<?= $i ?>" 
-                                                       type="radio" 
-                                                       <?= ($userReview && $userReview['rating'] == $i) ? 'checked' : '' ?>
-                                                       <?= $userReview ? 'disabled' : '' ?>
-                                                       required>
+                                                <input id="star<?= $i ?>"
+                                                    name="rating"
+                                                    value="<?= $i ?>"
+                                                    type="radio"
+                                                    <?= ($userReview && $userReview['rating'] == $i) ? 'checked' : '' ?>
+                                                    <?= $userReview ? 'disabled' : '' ?>
+                                                    required>
                                                 <label for="star<?= $i ?>" <?= $userReview ? 'class="disabled"' : '' ?>></label>
                                             <?php endfor; ?>
                                         </div>

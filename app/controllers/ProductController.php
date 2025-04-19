@@ -19,7 +19,7 @@ class ProductController extends Controller
         $cartItems = [];
         if (Auth::check()) {
             $cartProducts = Cart::getItems();
-            $cartItems = array_map(function($item) {
+            $cartItems = array_map(function ($item) {
                 return (int)$item['id']; // Ensure IDs are integers
             }, $cartProducts);
         }
@@ -63,24 +63,30 @@ class ProductController extends Controller
             http_response_code(404);
             return $this->view("404");
         }
-        
+
         $page = isset($_GET['review_page']) ? max(1, (int)$_GET['review_page']) : 1;
         $perPage = 5;
-        
+
         $related = Product::getRelated($id);
         $reviewData = Review::forProduct($id, $page, $perPage);
         $reviewStats = Review::getProductStats($id);
-        
+
         $wishlistItems = Auth::check() ? array_column(Wishlist::getItems(), 'product_id') : [];
         $cartItems = Auth::check() ? array_column(Cart::getItems(), 'id') : [];
-        
+
+        $userReview = null;
+        if (Auth::check()) {
+            $userReview = Review::findUserReview($id, Auth::user()['id']);
+        }
+
         $this->view("productDetails", compact(
-            'product', 
-            'related', 
+            'product',
+            'related',
             'reviewData',
             'reviewStats',
             'wishlistItems',
-            'cartItems'
+            'cartItems',
+            'userReview'   // <--- ADD this!
         ));
     }
 }
