@@ -73,7 +73,12 @@ $avgRating = number_format((float)$stats['avg_rating'], 1);
                                     <li>
                                         <div class="review-heading">
                                             <h5 class="name"><?= htmlspecialchars($review['user_name']) ?></h5>
-                                            <p class="date"><?= date('d M Y, g:i A', strtotime($review['created_at'])) ?></p>
+                                            <p class="date">
+                                                <?= date('d M Y, g:i A', strtotime($review['created_at'])) ?>
+                                                <?php if ($review['updated_at'] !== $review['created_at']): ?>
+                                                    <span class="edited-tag">(edited <?= date('d M Y, g:i A', strtotime($review['updated_at'])) ?>)</span>
+                                                <?php endif; ?>
+                                            </p>
                                             <div class="review-rating">
                                                 <?php for ($i = 1; $i <= 5; $i++): ?>
                                                     <i class="fa fa-star<?= $i > $review['rating'] ? '-o' : '' ?>"></i>
