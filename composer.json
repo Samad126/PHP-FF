@@ -7,5 +7,7 @@
             "App\\": "app/"
         }
     },
-    "require": {}
+    "require": {
+        "cloudinary/cloudinary_php": "^2"
+    }
 }
