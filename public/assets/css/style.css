@@ -2218,3 +2218,12 @@ textarea.input {
     visibility: visible;
 }
 
+.add-to-cart-btn.out-of-stock {
+    background-color: #999;
+    cursor: not-allowed;
+}
+
+.add-to-cart-btn.out-of-stock:hover {
+    background-color: #999;
+}
+

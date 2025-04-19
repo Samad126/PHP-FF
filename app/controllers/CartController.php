@@ -40,7 +40,14 @@ class CartController extends Controller
         } catch (\Exception $e) {
             if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest') {
                 // For AJAX requests
-                http_response_code($e->getMessage() === 'This item is already in your cart' ? 400 : 401);
+                $statusCode = match ($e->getMessage()) {
+                    'This item is already in your cart' => 400,
+                    'This item is out of stock' => 400,
+                    'Please login to add items to cart' => 401,
+                    default => 500
+                };
+                
+                http_response_code($statusCode);
                 echo json_encode([
                     'success' => false,
                     'message' => $e->getMessage()

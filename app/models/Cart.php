@@ -13,6 +13,19 @@ class Cart extends Model
             throw new \Exception('Please login to add items to cart');
         }
 
+        // Check product stock
+        $stmt = self::db()->prepare("SELECT stock FROM products WHERE id = ?");
+        $stmt->execute([$productId]);
+        $product = $stmt->fetch();
+        
+        if (!$product) {
+            throw new \Exception('Product not found');
+        }
+        
+        if ($product['stock'] <= 0) {
+            throw new \Exception('This item is out of stock');
+        }
+
         $userId = Auth::user()['id'];
         
         // First, check if user has a cart

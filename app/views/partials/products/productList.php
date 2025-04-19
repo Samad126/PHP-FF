@@ -60,6 +60,10 @@
                             <button class="add-to-cart-btn in-cart" disabled>
                                 <i class="fa fa-shopping-cart"></i> In Cart
                             </button>
+                        <?php elseif ($product['stock'] <= 0): ?>
+                            <button class="add-to-cart-btn out-of-stock" disabled>
+                                <i class="fa fa-shopping-cart"></i> Out of Stock
+                            </button>
                         <?php else: ?>
                             <button class="add-to-cart-btn" onclick="addToCart(<?= $product['id'] ?>)">
                                 <i class="fa fa-shopping-cart"></i> add to cart
