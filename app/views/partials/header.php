@@ -39,21 +39,18 @@ use App\core\Auth;
                     <div class="col-md-6">
                         <div class="header-search">
                             <form action="/products" method="GET">
-                                <input class="input" name="q" placeholder="Search here" style="border-radius: 40px 0px 0px 40px;" value="<?= htmlspecialchars($_GET['q'] ?? '') ?>">
+                                <input class="input" 
+                                       name="q" 
+                                       placeholder="Search here" 
+                                       style="border-radius: 40px 0px 0px 40px;" 
+                                       value="<?= htmlspecialchars($_GET['q'] ?? '') ?>">
                                 <!-- Preserve existing filters -->
-                                <?php if (!empty($_GET['category'])): ?>
-                                    <input type="hidden" name="category" value="<?= htmlspecialchars($_GET['category']) ?>">
-                                <?php endif; ?>
-                                <?php if (!empty($_GET['brand'])): ?>
-                                    <input type="hidden" name="brand" value="<?= htmlspecialchars($_GET['brand']) ?>">
-                                <?php endif; ?>
-                                <?php if (!empty($_GET['price_min'])): ?>
-                                    <input type="hidden" name="price_min" value="<?= htmlspecialchars($_GET['price_min']) ?>">
-                                <?php endif; ?>
-                                <?php if (!empty($_GET['price_max'])): ?>
-                                    <input type="hidden" name="price_max" value="<?= htmlspecialchars($_GET['price_max']) ?>">
-                                <?php endif; ?>
-                                <button class="search-btn">Search</button>
+                                <?php foreach(['category', 'brand', 'price_min', 'price_max', 'sort', 'per_page'] as $param): ?>
+                                    <?php if (!empty($_GET[$param])): ?>
+                                        <input type="hidden" name="<?= $param ?>" value="<?= htmlspecialchars($_GET[$param]) ?>">
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                                <button class="search-btn" type="submit">Search</button>
                             </form>
                         </div>
                     </div>

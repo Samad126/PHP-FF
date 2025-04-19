@@ -3,13 +3,16 @@
     <div class="aside">
         <h3 class="aside-title">Categories</h3>
         <div class="checkbox-filter">
-            <?php foreach ($categories as $category): ?>
+            <?php 
+            $selectedCategories = !empty($filters['category']) ? explode(',', $filters['category']) : [];
+            foreach ($categories as $category): 
+            ?>
             <div class="input-checkbox">
                 <input type="checkbox" 
                        id="category-<?= $category['id'] ?>" 
                        value="<?= $category['id'] ?>"
-                       <?= ($filters['category'] == $category['id']) ? 'checked' : '' ?>
-                       onchange="updateFilters('category', this.checked ? this.value : '')">
+                       <?= in_array($category['id'], $selectedCategories) ? 'checked' : '' ?>
+                       onchange="updateMultipleFilters('category', this.value, this.checked)">
                 <label for="category-<?= $category['id'] ?>">
                     <span></span>
                     <?= htmlspecialchars($category['name']) ?>
@@ -47,13 +50,16 @@
     <div class="aside">
         <h3 class="aside-title">Brand</h3>
         <div class="checkbox-filter">
-            <?php foreach ($brands as $brand): ?>
+            <?php 
+            $selectedBrands = !empty($filters['brand']) ? explode(',', $filters['brand']) : [];
+            foreach ($brands as $brand): 
+            ?>
             <div class="input-checkbox">
                 <input type="checkbox" 
                        id="brand-<?= $brand['id'] ?>" 
                        value="<?= $brand['id'] ?>"
-                       <?= ($filters['brand'] == $brand['id']) ? 'checked' : '' ?>
-                       onchange="updateFilters('brand', this.checked ? this.value : '')">
+                       <?= in_array($brand['id'], $selectedBrands) ? 'checked' : '' ?>
+                       onchange="updateMultipleFilters('brand', this.value, this.checked)">
                 <label for="brand-<?= $brand['id'] ?>">
                     <span></span>
                     <?= htmlspecialchars($brand['name']) ?>

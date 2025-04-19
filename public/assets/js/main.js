@@ -378,6 +378,39 @@ function updateFilters(param, value) {
     window.location.href = `${window.location.pathname}?${urlParams.toString()}`;
 }
 
+function updateMultipleFilters(param, value, isChecked) {
+    const urlParams = new URLSearchParams(window.location.search);
+    let values = urlParams.get(param) ? urlParams.get(param).split(',') : [];
+    
+    if (isChecked) {
+        // Add value if it doesn't exist
+        if (!values.includes(value)) {
+            values.push(value);
+        }
+    } else {
+        // Remove value if it exists
+        values = values.filter(v => v !== value);
+    }
+    
+    // Update or remove the parameter
+    if (values.length > 0) {
+        urlParams.set(param, values.join(','));
+    } else {
+        urlParams.delete(param);
+    }
+    
+    // Reset to page 1 when filters change
+    urlParams.delete('page');
+    
+    // Preserve search query if exists
+    const searchQuery = urlParams.get('q');
+    if (searchQuery) {
+        urlParams.set('q', searchQuery);
+    }
+    
+    window.location.href = `${window.location.pathname}?${urlParams.toString()}`;
+}
+
 // Initialize price slider
 $(document).ready(function() {
     if ($('#price-slider').length) {

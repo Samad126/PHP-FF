@@ -70,18 +70,33 @@ class Product extends Model
         $params = [];
         
         if (!empty($filters['q'])) {
-            $where[] = "(p.name LIKE :search OR p.description LIKE :search)";
-            $params[':search'] = '%' . $filters['q'] . '%';
+            $searchTerm = trim($filters['q']);
+            $where[] = "(
+                p.name LIKE :search 
+                OR p.description LIKE :search
+                OR b.name LIKE :search
+                OR CONCAT(b.name, ' ', p.name) LIKE :search
+                OR CONCAT(p.name, ' ', b.name) LIKE :search
+            )";
+            $params[':search'] = '%' . $searchTerm . '%';
         }
         
         if (!empty($filters['category'])) {
-            $where[] = "p.category_id = :category";
-            $params[':category'] = $filters['category'];
+            $categories = explode(',', $filters['category']);
+            $categoryPlaceholders = array_map(function($i) { return ':category'.$i; }, array_keys($categories));
+            $where[] = "p.category_id IN (" . implode(',', $categoryPlaceholders) . ")";
+            foreach ($categories as $i => $cat) {
+                $params[':category'.$i] = $cat;
+            }
         }
         
         if (!empty($filters['brand'])) {
-            $where[] = "p.brand_id = :brand";
-            $params[':brand'] = $filters['brand'];
+            $brands = explode(',', $filters['brand']);
+            $brandPlaceholders = array_map(function($i) { return ':brand'.$i; }, array_keys($brands));
+            $where[] = "p.brand_id IN (" . implode(',', $brandPlaceholders) . ")";
+            foreach ($brands as $i => $brand) {
+                $params[':brand'.$i] = $brand;
+            }
         }
         
         if (!empty($filters['price_min'])) {
@@ -107,7 +122,8 @@ class Product extends Model
         };
         
         // Get total count for pagination
-        $countSql = "SELECT COUNT(DISTINCT p.id) FROM products p 
+        $countSql = "SELECT COUNT(DISTINCT p.id) 
+                     FROM products p 
                      LEFT JOIN brands b ON p.brand_id = b.id 
                      LEFT JOIN categories c ON p.category_id = c.id 
                      $whereClause";
@@ -121,8 +137,8 @@ class Product extends Model
         $perPage = (int)($filters['per_page'] ?? 20);
         $offset = ($page - 1) * $perPage;
         
-        // Main query
-        $sql = "SELECT p.*, b.name as brand_name, c.name as category_name 
+        // Main query with DISTINCT to avoid duplicates
+        $sql = "SELECT DISTINCT p.*, b.name as brand_name, c.name as category_name 
                 FROM products p 
                 LEFT JOIN brands b ON p.brand_id = b.id 
                 LEFT JOIN categories c ON p.category_id = c.id 
@@ -144,8 +160,9 @@ class Product extends Model
         return [
             'items' => $stmt->fetchAll(),
             'total' => $total,
-            'showing_start' => $total > 0 ? $offset + 1 : 0,
-            'showing_end' => min($offset + $perPage, $total)
+            'page' => $page,
+            'per_page' => $perPage,
+            'total_pages' => ceil($total / $perPage)
         ];
     }
 }
