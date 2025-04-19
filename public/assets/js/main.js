@@ -226,6 +226,11 @@ function toggleWishlist(productId) {
                     btnTooltip.textContent = isInWishlist ? 'add to wishlist' : 'remove from wishlist';
                 }
             });
+
+            if (typeof data.wishlistCount !== 'undefined') {
+                console.log('Updating wishlist count to:', data.wishlistCount); // Debug log
+                updateWishlistCount(data.wishlistCount);
+            }
             
             showNotification(data.message, 'success');
         }
@@ -334,6 +339,30 @@ function updateCartCount(count) {
     const cartCountElement = document.querySelector('.cart-count');
     if (cartCountElement) {
         cartCountElement.textContent = count;
+    }
+}
+
+function updateWishlistCount(count) {
+    console.log('updateWishlistCount called with:', count); // Debug log
+    
+    // Try multiple selector strategies
+    let wishlistCountElement = document.querySelector('.header-ctn div:has(a[href*="wishlist"]) .qty');
+    
+    if (!wishlistCountElement) {
+        // Fallback to alternative selector
+        const wishlistElements = document.querySelectorAll('.header-ctn .qty');
+        wishlistElements.forEach(element => {
+            if (element.closest('div').querySelector('a[href*="wishlist"]')) {
+                wishlistCountElement = element;
+            }
+        });
+    }
+    
+    if (wishlistCountElement) {
+        console.log('Found wishlist element, updating to:', count); // Debug log
+        wishlistCountElement.textContent = count;
+    } else {
+        console.log('Could not find wishlist count element'); // Debug log
     }
 }
 

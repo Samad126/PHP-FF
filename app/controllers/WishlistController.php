@@ -28,9 +28,11 @@ class WishlistController extends Controller
             Wishlist::add($productId);
             
             if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest') {
+                $wishlistCount = count(Wishlist::getItems());  // Get fresh count
                 echo json_encode([
                     'success' => true,
-                    'message' => 'Product added to wishlist successfully'
+                    'message' => 'Product added to wishlist successfully',
+                    'wishlistCount' => $wishlistCount
                 ]);
                 exit;
             }
@@ -58,9 +60,11 @@ class WishlistController extends Controller
             Wishlist::remove($productId);
             
             if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest') {
+                $wishlistCount = count(Wishlist::getItems());  // Get fresh count
                 echo json_encode([
                     'success' => true,
-                    'message' => 'Product removed from wishlist successfully'
+                    'message' => 'Product removed from wishlist successfully',
+                    'wishlistCount' => $wishlistCount
                 ]);
                 exit;
             }
