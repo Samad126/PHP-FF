@@ -28,7 +28,8 @@
                                 <!-- product -->
                                 <div class="product">
                                     <div class="product-img">
-                                        <img src="<?= htmlspecialchars($product['image_url']) ?>" alt="<?= htmlspecialchars($product['name']) ?>">
+                                        <img src="<?= htmlspecialchars($product['image_url'] ?? '/images/placeholder.jpg') ?>" 
+                                             alt="<?= htmlspecialchars($product['name']) ?>">
                                         <?php if (isset($product['discount_percentage']) && $product['discount_percentage'] > 0): ?>
                                         <div class="product-label">
                                             <span class="sale">-<?= $product['discount_percentage'] ?>%</span>
