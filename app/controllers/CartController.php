@@ -40,7 +40,7 @@ class CartController extends Controller
         } catch (\Exception $e) {
             if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest') {
                 // For AJAX requests
-                http_response_code(401);
+                http_response_code($e->getMessage() === 'This item is already in your cart' ? 400 : 401);
                 echo json_encode([
                     'success' => false,
                     'message' => $e->getMessage()
@@ -48,7 +48,12 @@ class CartController extends Controller
                 exit;
             }
             
-            header("Location: /login?redirect=/cart");
+            $_SESSION['error'] = $e->getMessage();
+            if ($e->getMessage() === 'Please login to add items to cart') {
+                header("Location: /login?redirect=/cart");
+            } else {
+                header("Location: /cart");
+            }
             exit;
         }
     }

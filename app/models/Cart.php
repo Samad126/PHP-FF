@@ -35,14 +35,12 @@ class Cart extends Model
         $item = $stmt->fetch();
         
         if ($item) {
-            // Update quantity if product exists
-            $stmt = self::db()->prepare("UPDATE cart_items SET quantity = quantity + 1 WHERE cart_id = ? AND product_id = ?");
-            $stmt->execute([$cartId, $productId]);
-        } else {
-            // Add new item if product doesn't exist
-            $stmt = self::db()->prepare("INSERT INTO cart_items (cart_id, product_id, quantity) VALUES (?, ?, 1)");
-            $stmt->execute([$cartId, $productId]);
+            throw new \Exception('This item is already in your cart');
         }
+
+        // Add new item if product doesn't exist
+        $stmt = self::db()->prepare("INSERT INTO cart_items (cart_id, product_id, quantity) VALUES (?, ?, 1)");
+        $stmt->execute([$cartId, $productId]);
     }
 
     public static function getItems()
