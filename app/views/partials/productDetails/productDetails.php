@@ -24,17 +24,29 @@
 
         <!-- Add to cart form -->
         <div class="add-to-cart">
-            <div class="qty-label">
-                Qty
-                <div class="input-number">
-                    <input type="number" value="1" min="1" max="<?= $product['stock'] ?>">
-                    <span class="qty-up">+</span>
-                    <span class="qty-down">-</span>
+            <?php if ($product['stock'] > 0): ?>
+                <div class="qty-label">
+                    Qty
+                    <div class="input-number">
+                        <input type="number" value="1" min="1" max="<?= $product['stock'] ?>" id="product-quantity">
+                        <span class="qty-up">+</span>
+                        <span class="qty-down">-</span>
+                    </div>
                 </div>
-            </div>
-            <button class="add-to-cart-btn" onclick="addToCart(<?= $product['id'] ?>)">
-                <i class="fa fa-shopping-cart"></i> Add to Cart
-            </button>
+                <?php if (isset($cartItems) && in_array($product['id'], $cartItems)): ?>
+                    <button class="add-to-cart-btn in-cart" disabled>
+                        <i class="fa fa-shopping-cart"></i> In Cart
+                    </button>
+                <?php else: ?>
+                    <button class="add-to-cart-btn" onclick="addToCart(<?= $product['id'] ?>)">
+                        <i class="fa fa-shopping-cart"></i> Add to Cart
+                    </button>
+                <?php endif; ?>
+            <?php else: ?>
+                <button class="add-to-cart-btn out-of-stock" disabled>
+                    <i class="fa fa-shopping-cart"></i> Out of Stock
+                </button>
+            <?php endif; ?>
         </div>
 
         <ul class="product-btns">

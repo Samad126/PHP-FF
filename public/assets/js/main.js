@@ -255,24 +255,41 @@ function toggleWishlist(productId) {
 }
 
 function addToCart(productId) {
+    const quantityInput = document.getElementById('product-quantity');
+    const quantity = quantityInput ? parseInt(quantityInput.value) : 1;
+    const maxStock = quantityInput ? parseInt(quantityInput.getAttribute('max')) : 1;
+    
+    if (quantityInput && (isNaN(quantity) || quantity < 1)) {
+        showNotification('Please enter a valid quantity', 'error');
+        return;
+    }
+
+    if (quantity > maxStock) {
+        showNotification(`Maximum available stock is ${maxStock}`, 'error');
+        quantityInput.value = maxStock;
+        return;
+    }
+
     fetch(`/cart/add/${productId}`, {
         method: 'POST',
         headers: {
+            'Content-Type': 'application/json',
             'X-Requested-With': 'XMLHttpRequest'
-        }
+        },
+        body: JSON.stringify({ quantity: quantity })
     })
-    .then(response => response.json().then(data => ({status: response.status, data})))
-    .then(({status, data}) => {
+    .then(response => response.json().then(data => ({ status: response.status, data })))
+    .then(({ status, data }) => {
         if (status === 200 && data.success) {
             // Update cart count in header
-            if (data.cartCount !== undefined) {
+            if (typeof data.cartCount !== 'undefined') {
                 updateCartCount(data.cartCount);
             }
             
-            // Update ALL matching add to cart buttons for this product across all sections
-            const containers = document.querySelectorAll(`.add-to-cart button[onclick="addToCart(${productId})"]`);
-            containers.forEach(button => {
-                const container = button.closest('.add-to-cart');
+            // Update add to cart button
+            const addToCartBtn = document.querySelector(`.add-to-cart button[onclick="addToCart(${productId})"]`);
+            if (addToCartBtn) {
+                const container = addToCartBtn.closest('.add-to-cart');
                 if (container) {
                     container.innerHTML = `
                         <button class="add-to-cart-btn in-cart" disabled>
@@ -280,7 +297,7 @@ function addToCart(productId) {
                         </button>
                     `;
                 }
-            });
+            }
             
             showNotification(data.message || 'Product added to cart!', 'success');
         } else {

@@ -22,10 +22,20 @@ class CartController extends Controller
     public function add($productId)
     {
         try {
-            Cart::add($productId);
+            $quantity = 1;
+            
+            // Check if quantity was provided in request
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                $json = file_get_contents('php://input');
+                $data = json_decode($json, true);
+                if (isset($data['quantity'])) {
+                    $quantity = (int)$data['quantity'];
+                }
+            }
+
+            Cart::add($productId, $quantity);
             
             if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest') {
-                // For AJAX requests
                 echo json_encode([
                     'success' => true,
                     'message' => 'Product added to cart successfully',
@@ -39,15 +49,7 @@ class CartController extends Controller
             
         } catch (\Exception $e) {
             if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest') {
-                // For AJAX requests
-                $statusCode = match ($e->getMessage()) {
-                    'This item is already in your cart' => 400,
-                    'This item is out of stock' => 400,
-                    'Please login to add items to cart' => 401,
-                    default => 500
-                };
-                
-                http_response_code($statusCode);
+                http_response_code(400);
                 echo json_encode([
                     'success' => false,
                     'message' => $e->getMessage()
@@ -56,11 +58,7 @@ class CartController extends Controller
             }
             
             $_SESSION['error'] = $e->getMessage();
-            if ($e->getMessage() === 'Please login to add items to cart') {
-                header("Location: /login?redirect=/cart");
-            } else {
-                header("Location: /cart");
-            }
+            header("Location: " . $_SERVER['HTTP_REFERER'] ?? '/cart');
             exit;
         }
     }
