@@ -8,10 +8,37 @@
             <?php include_once 'partials/products/sidebar.php'; ?>
             <!-- /ASIDE -->
 
+            <?php
+            // Extract variables passed from controller
+            extract($data ?? [], EXTR_SKIP);
+            ?>
             <!-- STORE -->
             <div id="store" class="col-md-9">
                 <!-- store top filter -->
-                <?php include_once 'partials/products/storeTopFilter.php'; ?>
+                <div class="store-filter clearfix">
+                    <div class="store-sort">
+                        <label>
+                            Sort By:
+                            <select class="input-select" onchange="updateFilters('sort', this.value)">
+                                <option value="newest" <?= ($filters['sort'] ?? '') === 'newest' ? 'selected' : '' ?>>Newest</option>
+                                <option value="price_asc" <?= ($filters['sort'] ?? '') === 'price_asc' ? 'selected' : '' ?>>Price: Low to High</option>
+                                <option value="price_desc" <?= ($filters['sort'] ?? '') === 'price_desc' ? 'selected' : '' ?>>Price: High to Low</option>
+                            </select>
+                        </label>
+                        <label>
+                            Show:
+                            <select class="input-select" onchange="updateFilters('per_page', this.value)">
+                                <option value="20" <?= ($filters['per_page'] ?? 20) == 20 ? 'selected' : '' ?>>20</option>
+                                <option value="50" <?= ($filters['per_page'] ?? 20) == 50 ? 'selected' : '' ?>>50</option>
+                                <option value="100" <?= ($filters['per_page'] ?? 20) == 100 ? 'selected' : '' ?>>100</option>
+                            </select>
+                        </label>
+                    </div>
+                    <ul class="store-grid">
+                        <li class="active"><i class="fa fa-th"></i></li>
+                        <li><a href="#"><i class="fa fa-th-list"></i></a></li>
+                    </ul>
+                </div>
                 <!-- /store top filter -->
 
                 <!-- store products -->

@@ -298,3 +298,63 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
+
+function updateFilters(param, value) {
+    const urlParams = new URLSearchParams(window.location.search);
+    
+    if (value === '') {
+        urlParams.delete(param);
+    } else {
+        urlParams.set(param, value);
+    }
+    
+    // Reset to page 1 when filters change
+    if (param !== 'page') {
+        urlParams.delete('page');
+    }
+    
+    // Preserve search query if exists
+    const searchQuery = urlParams.get('q');
+    if (searchQuery) {
+        urlParams.set('q', searchQuery);
+    }
+    
+    window.location.href = `${window.location.pathname}?${urlParams.toString()}`;
+}
+
+// Initialize price slider
+$(document).ready(function() {
+    if ($('#price-slider').length) {
+        const minPrice = parseInt($('#price-min').val()) || 0;
+        const maxPrice = parseInt($('#price-max').val()) || 1000;
+        
+        const priceSlider = document.getElementById('price-slider');
+        noUiSlider.create(priceSlider, {
+            start: [minPrice, maxPrice],
+            connect: true,
+            step: 1,
+            range: {
+                'min': 0,
+                'max': 1000
+            }
+        });
+
+        priceSlider.noUiSlider.on('update', function(values, handle) {
+            const value = Math.round(values[handle]);
+            if (handle === 0) {
+                document.getElementById('price-min').value = value;
+            } else {
+                document.getElementById('price-max').value = value;
+            }
+        });
+
+        priceSlider.noUiSlider.on('change', function(values, handle) {
+            const value = Math.round(values[handle]);
+            if (handle === 0) {
+                updateFilters('price_min', value);
+            } else {
+                updateFilters('price_max', value);
+            }
+        });
+    }
+});

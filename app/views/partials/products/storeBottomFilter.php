@@ -1,10 +1,27 @@
 <div class="store-filter clearfix">
-    <span class="store-qty">Showing 20-100 products</span>
+    <div class="store-sort">
+        <span>SHOWING <?= $showing_start ?? 0 ?>-<?= $showing_end ?? 0 ?> OF <?= $total ?? 0 ?> PRODUCTS</span>
+    </div>
     <ul class="store-pagination">
-        <li class="active">1</li>
-        <li><a href="#">2</a></li>
-        <li><a href="#">3</a></li>
-        <li><a href="#">4</a></li>
-        <li><a href="#"><i class="fa fa-angle-right"></i></a></li>
+        <?php 
+        $totalPages = ceil($total / ($filters['per_page'] ?? 20));
+        $currentPage = $filters['page'] ?? 1;
+        
+        // Previous page
+        if ($currentPage > 1): ?>
+            <li><a href="javascript:void(0)" onclick="updateFilters('page', <?= $currentPage - 1 ?>)"><i class="fa fa-angle-left"></i></a></li>
+        <?php endif;
+
+        // Page numbers
+        for ($i = 1; $i <= $totalPages; $i++): ?>
+            <li <?= $i == $currentPage ? 'class="active"' : '' ?>>
+                <a href="javascript:void(0)" onclick="updateFilters('page', <?= $i ?>)"><?= $i ?></a>
+            </li>
+        <?php endfor;
+
+        // Next page
+        if ($currentPage < $totalPages): ?>
+            <li><a href="javascript:void(0)" onclick="updateFilters('page', <?= $currentPage + 1 ?>)"><i class="fa fa-angle-right"></i></a></li>
+        <?php endif; ?>
     </ul>
 </div>
