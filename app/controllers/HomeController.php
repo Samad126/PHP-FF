@@ -11,9 +11,11 @@ class HomeController extends Controller
     {
         $featuredProducts = Product::getFeatured();
         $newProducts = Product::getNewProducts();
+        $topSellingProducts = Product::getTopSelling();
         $this->view("home", [
             'products' => $featuredProducts,
-            'newProducts' => $newProducts
+            'newProducts' => $newProducts,
+            'topSellingProducts' => $topSellingProducts
         ]);
     }
 }

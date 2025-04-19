@@ -350,3 +350,6 @@ VALUES
     (3, 14, 2, 129.99);
 
 -- 2x JBL Flip 6
+
+ALTER TABLE products ADD COLUMN sales_count INT DEFAULT 0;
+

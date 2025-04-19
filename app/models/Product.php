@@ -48,4 +48,19 @@ class Product extends Model
         $stmt->execute();
         return $stmt->fetchAll();
     }
+
+    public static function getTopSelling($limit = 5)
+    {
+        $limit = (int)$limit; // Sanitize the limit
+        $stmt = self::db()->prepare(
+            "SELECT p.*, b.name as brand_name, c.name as category_name 
+             FROM products p 
+             LEFT JOIN brands b ON p.brand_id = b.id 
+             LEFT JOIN categories c ON p.category_id = c.id 
+             ORDER BY p.sales_count DESC 
+             LIMIT $limit"
+        );
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
 }
