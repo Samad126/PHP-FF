@@ -10,6 +10,9 @@ if (php_sapi_name() === 'cli-server') {
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
+// Load environment variables
+App\core\Environment::load();
+
 // Load routes
 require_once __DIR__ . '/../routes/web.php';
 
