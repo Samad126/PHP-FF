@@ -105,25 +105,25 @@ $avgRating = number_format((float)$stats['avg_rating'], 1);
                     <!-- Review Form -->
                     <div class="col-md-3">
                         <div id="review-form">
-                            <form class="review-form" action="/reviews/add" method="POST">
-                                <input type="hidden" name="product_id" value="<?= $product['id'] ?>">
-                                <?php if (!Auth::check()): ?>
-                                    <input class="input" type="text" name="name" placeholder="Your Name" required>
-                                    <input class="input" type="email" name="email" placeholder="Your Email" required>
-                                <?php endif; ?>
-                                <input class="input" type="text" name="title" placeholder="Review Title">
-                                <textarea class="input" name="comment" placeholder="Your Review" required></textarea>
-                                <div class="input-rating">
-                                    <span>Your Rating: </span>
-                                    <div class="stars">
-                                        <?php for ($i = 5; $i >= 1; $i--): ?>
-                                            <input id="star<?= $i ?>" name="rating" value="<?= $i ?>" type="radio" <?= $i === 5 ? 'required' : '' ?>>
-                                            <label for="star<?= $i ?>"></label>
-                                        <?php endfor; ?>
+                            <?php if (Auth::check()): ?>
+                                <form class="review-form" action="/reviews/add" method="POST">
+                                    <input type="hidden" name="product_id" value="<?= $product['id'] ?>">
+                                    <input class="input" type="text" name="title" placeholder="Review Title">
+                                    <textarea class="input" name="comment" placeholder="Your Review" required></textarea>
+                                    <div class="input-rating">
+                                        <span>Your Rating: </span>
+                                        <div class="stars">
+                                            <?php for ($i = 5; $i >= 1; $i--): ?>
+                                                <input id="star<?= $i ?>" name="rating" value="<?= $i ?>" type="radio" required>
+                                                <label for="star<?= $i ?>"></label>
+                                            <?php endfor; ?>
+                                        </div>
                                     </div>
-                                </div>
-                                <button type="submit" class="primary-btn">Submit</button>
-                            </form>
+                                    <button class="primary-btn">Submit Review</button>
+                                </form>
+                            <?php else: ?>
+                                <p>Please <a href="/login?redirect=<?= urlencode($_SERVER['REQUEST_URI']) ?>">login</a> to submit a review.</p>
+                            <?php endif; ?>
                         </div>
                     </div>
                     <!-- /Review Form -->
