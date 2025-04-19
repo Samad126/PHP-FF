@@ -7,6 +7,7 @@ use App\controllers\ProductController;
 use App\controllers\CartController;
 use App\controllers\CheckoutController;
 use App\controllers\WishlistController;
+use App\controllers\ReviewController;
 
 // Auth routes
 Router::get('/login', [AuthController::class, 'login']);
@@ -17,6 +18,9 @@ Router::get('/logout', [AuthController::class, 'logout']);
 
 // Home routes
 Router::get('/', [HomeController::class, 'index']);
+
+// Add the review route
+Router::post('/reviews/add', [ReviewController::class, 'add']);
 
 // Product routes
 Router::get('/products', [ProductController::class, 'index']);

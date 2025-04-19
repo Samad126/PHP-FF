@@ -1,9 +1,18 @@
+<?php
+use App\models\Review;
+use App\core\Auth;
+
+$reviews = Review::forProduct($product['id']);
+$stats = Review::getProductStats($product['id']);
+$totalReviews = (int)$stats['total_reviews'];
+$avgRating = number_format((float)$stats['avg_rating'], 1);
+?>
 <div class="col-md-12">
     <div id="product-tab">
         <!-- product tab nav -->
         <ul class="tab-nav">
             <li class="active"><a data-toggle="tab" href="#tab1">Description</a></li>
-            <li><a data-toggle="tab" href="#tab3">Reviews (3)</a></li>
+            <li><a data-toggle="tab" href="#tab3">Reviews (<?= $totalReviews ?>)</a></li>
         </ul>
         <!-- /product tab nav -->
 
@@ -26,81 +35,31 @@
                     <div class="col-md-3">
                         <div id="rating">
                             <div class="rating-avg">
-                                <span>4.5</span>
+                                <span><?= $avgRating ?></span>
                                 <div class="rating-stars">
-                                    <i class="fa fa-star"></i>
-                                    <i class="fa fa-star"></i>
-                                    <i class="fa fa-star"></i>
-                                    <i class="fa fa-star"></i>
-                                    <i class="fa fa-star-o"></i>
+                                    <?php for ($i = 1; $i <= 5; $i++): ?>
+                                        <i class="fa fa-star<?= $i > $avgRating ? '-o' : '' ?>"></i>
+                                    <?php endfor; ?>
                                 </div>
                             </div>
                             <ul class="rating">
-                                <li>
-                                    <div class="rating-stars">
-                                        <i class="fa fa-star"></i>
-                                        <i class="fa fa-star"></i>
-                                        <i class="fa fa-star"></i>
-                                        <i class="fa fa-star"></i>
-                                        <i class="fa fa-star"></i>
-                                    </div>
-                                    <div class="rating-progress">
-                                        <div style="width: 80%;"></div>
-                                    </div>
-                                    <span class="sum">3</span>
-                                </li>
-                                <li>
-                                    <div class="rating-stars">
-                                        <i class="fa fa-star"></i>
-                                        <i class="fa fa-star"></i>
-                                        <i class="fa fa-star"></i>
-                                        <i class="fa fa-star"></i>
-                                        <i class="fa fa-star-o"></i>
-                                    </div>
-                                    <div class="rating-progress">
-                                        <div style="width: 60%;"></div>
-                                    </div>
-                                    <span class="sum">2</span>
-                                </li>
-                                <li>
-                                    <div class="rating-stars">
-                                        <i class="fa fa-star"></i>
-                                        <i class="fa fa-star"></i>
-                                        <i class="fa fa-star"></i>
-                                        <i class="fa fa-star-o"></i>
-                                        <i class="fa fa-star-o"></i>
-                                    </div>
-                                    <div class="rating-progress">
-                                        <div></div>
-                                    </div>
-                                    <span class="sum">0</span>
-                                </li>
-                                <li>
-                                    <div class="rating-stars">
-                                        <i class="fa fa-star"></i>
-                                        <i class="fa fa-star"></i>
-                                        <i class="fa fa-star-o"></i>
-                                        <i class="fa fa-star-o"></i>
-                                        <i class="fa fa-star-o"></i>
-                                    </div>
-                                    <div class="rating-progress">
-                                        <div></div>
-                                    </div>
-                                    <span class="sum">0</span>
-                                </li>
-                                <li>
-                                    <div class="rating-stars">
-                                        <i class="fa fa-star"></i>
-                                        <i class="fa fa-star-o"></i>
-                                        <i class="fa fa-star-o"></i>
-                                        <i class="fa fa-star-o"></i>
-                                        <i class="fa fa-star-o"></i>
-                                    </div>
-                                    <div class="rating-progress">
-                                        <div></div>
-                                    </div>
-                                    <span class="sum">0</span>
-                                </li>
+                                <?php for ($i = 5; $i >= 1; $i--): ?>
+                                    <li>
+                                        <div class="rating-stars">
+                                            <?php for ($j = 1; $j <= 5; $j++): ?>
+                                                <i class="fa fa-star<?= $j > $i ? '-o' : '' ?>"></i>
+                                            <?php endfor; ?>
+                                        </div>
+                                        <div class="rating-progress">
+                                            <?php 
+                                            $count = $stats[$i . '_star'];
+                                            $percentage = $totalReviews > 0 ? ($count / $totalReviews) * 100 : 0;
+                                            ?>
+                                            <div style="width: <?= $percentage ?>%;"></div>
+                                        </div>
+                                        <span class="sum"><?= $count ?></span>
+                                    </li>
+                                <?php endfor; ?>
                             </ul>
                         </div>
                     </div>
@@ -110,65 +69,35 @@
                     <div class="col-md-6">
                         <div id="reviews">
                             <ul class="reviews">
-                                <li>
-                                    <div class="review-heading">
-                                        <h5 class="name">John</h5>
-                                        <p class="date">27 DEC 2018, 8:0 PM</p>
-                                        <div class="review-rating">
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star-o empty"></i>
+                                <?php foreach ($reviews as $review): ?>
+                                    <li>
+                                        <div class="review-heading">
+                                            <h5 class="name"><?= htmlspecialchars($review['user_name']) ?></h5>
+                                            <p class="date"><?= date('d M Y, g:i A', strtotime($review['created_at'])) ?></p>
+                                            <div class="review-rating">
+                                                <?php for ($i = 1; $i <= 5; $i++): ?>
+                                                    <i class="fa fa-star<?= $i > $review['rating'] ? '-o' : '' ?>"></i>
+                                                <?php endfor; ?>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="review-body">
-                                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
-                                            eiusmod tempor incididunt ut labore et dolore magna aliqua</p>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="review-heading">
-                                        <h5 class="name">John</h5>
-                                        <p class="date">27 DEC 2018, 8:0 PM</p>
-                                        <div class="review-rating">
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star-o empty"></i>
+                                        <div class="review-body">
+                                            <?php if (!empty($review['title'])): ?>
+                                                <h6><?= htmlspecialchars($review['title']) ?></h6>
+                                            <?php endif; ?>
+                                            <p><?= htmlspecialchars($review['comment']) ?></p>
                                         </div>
-                                    </div>
-                                    <div class="review-body">
-                                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
-                                            eiusmod tempor incididunt ut labore et dolore magna aliqua</p>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="review-heading">
-                                        <h5 class="name">John</h5>
-                                        <p class="date">27 DEC 2018, 8:0 PM</p>
-                                        <div class="review-rating">
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star-o empty"></i>
-                                        </div>
-                                    </div>
-                                    <div class="review-body">
-                                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
-                                            eiusmod tempor incididunt ut labore et dolore magna aliqua</p>
-                                    </div>
-                                </li>
+                                    </li>
+                                <?php endforeach; ?>
                             </ul>
-                            <ul class="reviews-pagination">
-                                <li class="active">1</li>
-                                <li><a href="#">2</a></li>
-                                <li><a href="#">3</a></li>
-                                <li><a href="#">4</a></li>
-                                <li><a href="#"><i class="fa fa-angle-right"></i></a></li>
-                            </ul>
+                            <?php if (count($reviews) > 5): ?>
+                                <ul class="reviews-pagination">
+                                    <li class="active">1</li>
+                                    <li><a href="#">2</a></li>
+                                    <li><a href="#">3</a></li>
+                                    <li><a href="#">4</a></li>
+                                    <li><a href="#"><i class="fa fa-angle-right"></i></a></li>
+                                </ul>
+                            <?php endif; ?>
                         </div>
                     </div>
                     <!-- /Reviews -->
@@ -176,26 +105,24 @@
                     <!-- Review Form -->
                     <div class="col-md-3">
                         <div id="review-form">
-                            <form class="review-form">
-                                <input class="input" type="text" placeholder="Your Name">
-                                <input class="input" type="email" placeholder="Your Email">
-                                <textarea class="input" placeholder="Your Review"></textarea>
+                            <form class="review-form" action="/reviews/add" method="POST">
+                                <input type="hidden" name="product_id" value="<?= $product['id'] ?>">
+                                <?php if (!Auth::check()): ?>
+                                    <input class="input" type="text" name="name" placeholder="Your Name" required>
+                                    <input class="input" type="email" name="email" placeholder="Your Email" required>
+                                <?php endif; ?>
+                                <input class="input" type="text" name="title" placeholder="Review Title">
+                                <textarea class="input" name="comment" placeholder="Your Review" required></textarea>
                                 <div class="input-rating">
                                     <span>Your Rating: </span>
                                     <div class="stars">
-                                        <input id="star5" name="rating" value="5" type="radio"><label
-                                            for="star5"></label>
-                                        <input id="star4" name="rating" value="4" type="radio"><label
-                                            for="star4"></label>
-                                        <input id="star3" name="rating" value="3" type="radio"><label
-                                            for="star3"></label>
-                                        <input id="star2" name="rating" value="2" type="radio"><label
-                                            for="star2"></label>
-                                        <input id="star1" name="rating" value="1" type="radio"><label
-                                            for="star1"></label>
+                                        <?php for ($i = 5; $i >= 1; $i--): ?>
+                                            <input id="star<?= $i ?>" name="rating" value="<?= $i ?>" type="radio" <?= $i === 5 ? 'required' : '' ?>>
+                                            <label for="star<?= $i ?>"></label>
+                                        <?php endfor; ?>
                                     </div>
                                 </div>
-                                <button class="primary-btn">Submit</button>
+                                <button type="submit" class="primary-btn">Submit</button>
                             </form>
                         </div>
                     </div>

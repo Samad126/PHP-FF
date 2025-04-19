@@ -8,6 +8,7 @@ use App\models\Category;
 use App\models\Brand;
 use App\models\Wishlist;
 use App\models\Cart;
+use App\models\Review;
 use App\core\Auth;
 
 class ProductController extends Controller
@@ -64,16 +65,17 @@ class ProductController extends Controller
         }
         
         $related = Product::getRelated($id);
-        $topSellingProducts = Product::getTopSelling(3);
+        $reviews = Review::forProduct($id);
+        $reviewStats = Review::getProductStats($id);
         
-        // Get wishlist and cart items for the current user
         $wishlistItems = Auth::check() ? array_column(Wishlist::getItems(), 'product_id') : [];
         $cartItems = Auth::check() ? array_column(Cart::getItems(), 'id') : [];
         
         $this->view("productDetails", compact(
             'product', 
             'related', 
-            'topSellingProducts',
+            'reviews',
+            'reviewStats',
             'wishlistItems',
             'cartItems'
         ));
