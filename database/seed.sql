@@ -73,15 +73,14 @@ VALUES
     ('Sony', 6),
     ('Fujifilm', 6);
 
--- Products
+-- Products (without image_url column)
 INSERT INTO
     products (
         name,
         description,
         price,
         brand_id,
-        category_id,
-        image_url
+        category_id
     )
 VALUES
     -- Smartphones
@@ -90,32 +89,28 @@ VALUES
         '6.1" Super Retina XDR display, A16 Bionic',
         999.99,
         1,
-        2,
-        '/images/iphone14pro.jpg'
+        2
     ),
     (
         'Galaxy S23 Ultra',
         '6.8" Dynamic AMOLED, S Pen support',
         1199.99,
         2,
-        2,
-        '/images/s23ultra.jpg'
+        2
     ),
     (
         'Pixel 7 Pro',
         '6.7" OLED, Google Tensor G2',
         899.99,
         3,
-        2,
-        '/images/pixel7pro.jpg'
+        2
     ),
     (
         'OnePlus 11',
         '6.7" AMOLED, Snapdragon 8 Gen 2',
         699.99,
         4,
-        2,
-        '/images/oneplus11.jpg'
+        2
     ),
     -- Laptops
     (
@@ -123,32 +118,28 @@ VALUES
         '15" 4K OLED, Intel i9, RTX 3050 Ti',
         1999.99,
         5,
-        3,
-        '/images/xps15.jpg'
+        3
     ),
     (
         'HP Spectre x360',
         '14" 3K2K OLED, Intel i7, 32GB RAM',
         1699.99,
         6,
-        3,
-        '/images/spectre.jpg'
+        3
     ),
     (
         'ThinkPad X1 Carbon',
         '14" 2.8K OLED, Intel i7, 16GB RAM',
         1599.99,
         7,
-        3,
-        '/images/x1carbon.jpg'
+        3
     ),
     (
         'ASUS ROG Zephyrus',
         '16" QHD, Ryzen 9, RTX 4090',
         2499.99,
         8,
-        3,
-        '/images/zephyrus.jpg'
+        3
     ),
     -- Gaming
     (
@@ -156,24 +147,21 @@ VALUES
         'PlayStation 5 Console',
         499.99,
         9,
-        4,
-        '/images/ps5.jpg'
+        4
     ),
     (
         'Xbox Series X',
         'Xbox Series X Console',
         499.99,
         10,
-        4,
-        '/images/xboxseriesx.jpg'
+        4
     ),
     (
         'Nintendo Switch OLED',
         '7" OLED Display',
         349.99,
         11,
-        4,
-        '/images/switch.jpg'
+        4
     ),
     -- Audio
     (
@@ -181,32 +169,28 @@ VALUES
         'QuietComfort 45 Wireless ANC',
         329.99,
         12,
-        5,
-        '/images/qc45.jpg'
+        5
     ),
     (
         'Sony WH-1000XM5',
         'Wireless Noise Cancelling',
         399.99,
         13,
-        5,
-        '/images/wh1000xm5.jpg'
+        5
     ),
     (
         'JBL Flip 6',
         'Portable Bluetooth Speaker',
         129.99,
         14,
-        5,
-        '/images/flip6.jpg'
+        5
     ),
     (
         'Sennheiser HD 660S',
         'Open-back Headphones',
         499.99,
         15,
-        5,
-        '/images/hd660s.jpg'
+        5
     ),
     -- Cameras
     (
@@ -214,33 +198,69 @@ VALUES
         'Full-frame Mirrorless, 45MP',
         3899.99,
         16,
-        6,
-        '/images/eosr5.jpg'
+        6
     ),
     (
         'Nikon Z6 II',
         'Full-frame Mirrorless, 24.5MP',
         1999.99,
         17,
-        6,
-        '/images/z6ii.jpg'
+        6
     ),
     (
         'Sony A7 IV',
         'Full-frame Mirrorless, 33MP',
         2499.99,
         18,
-        6,
-        '/images/a7iv.jpg'
+        6
     ),
     (
         'Fujifilm X-T5',
         'APS-C Mirrorless, 40MP',
         1699.99,
         19,
-        6,
-        '/images/xt5.jpg'
+        6
     );
+
+-- Product Images (multiple images per product)
+INSERT INTO
+    product_images (product_id, image_url, sort_order)
+VALUES
+    -- iPhone 14 Pro images
+    (1, '/images/iphone14pro/main.jpg', 0),
+    (1, '/images/iphone14pro/angle.jpg', 1),
+    (1, '/images/iphone14pro/back.jpg', 2),
+    -- Galaxy S23 Ultra images
+    (2, '/images/s23ultra/main.jpg', 0),
+    (2, '/images/s23ultra/angle.jpg', 1),
+    (2, '/images/s23ultra/back.jpg', 2),
+    -- Pixel 7 Pro images
+    (3, '/images/pixel7pro/main.jpg', 0),
+    (3, '/images/pixel7pro/angle.jpg', 1),
+    (3, '/images/pixel7pro/back.jpg', 2),
+    -- OnePlus 11 images
+    (4, '/images/oneplus11/main.jpg', 0),
+    (4, '/images/oneplus11/angle.jpg', 1),
+    (4, '/images/oneplus11/back.jpg', 2),
+    -- Dell XPS 15 images
+    (5, '/images/xps15/main.jpg', 0),
+    (5, '/images/xps15/angle.jpg', 1),
+    (5, '/images/xps15/keyboard.jpg', 2),
+    -- Other products' main images
+    (6, '/images/spectre.jpg', 0),
+    (7, '/images/x1carbon.jpg', 0),
+    (8, '/images/zephyrus.jpg', 0),
+    (9, '/images/ps5.jpg', 0),
+    (10, '/images/xboxseriesx.jpg', 0),
+    (11, '/images/switch.jpg', 0),
+    (12, '/images/qc45.jpg', 0),
+    (13, '/images/wh1000xm5.jpg', 0),
+    (14, '/images/flip6.jpg', 0),
+    (15, '/images/hd660s.jpg', 0),
+    (16, '/images/eosr5.jpg', 0),
+    (17, '/images/z6ii.jpg', 0),
+    (18, '/images/a7iv.jpg', 0),
+    (19, '/images/xt5.jpg', 0);
 
 -- Addresses
 INSERT INTO
@@ -347,9 +367,9 @@ VALUES
     (2, 5, 1, 1999.99), -- Dell XPS 15
     (2, 12, 1, 329.99), -- Bose QC45
     (3, 10, 1, 499.99), -- Xbox Series X
-    (3, 14, 2, 129.99);
+    (3, 14, 2, 129.99); -- 2x JBL Flip 6
 
--- 2x JBL Flip 6
+-- Remove this line as the column already exists in the schema:
+-- ALTER TABLE products ADD COLUMN sales_count INT DEFAULT 0;
 
-ALTER TABLE products ADD COLUMN sales_count INT DEFAULT 0;
 

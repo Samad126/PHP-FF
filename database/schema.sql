@@ -34,7 +34,7 @@ CREATE TABLE
         UNIQUE KEY `uniq_brand_in_category` (`category_id`, `name`)
     ) ENGINE = InnoDB;
 
--- Products table (with image URLs)
+-- Products table (with all columns consolidated)
 CREATE TABLE
     `products` (
         `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -43,11 +43,31 @@ CREATE TABLE
         `price` DECIMAL(10, 2) NOT NULL,
         `brand_id` INT UNSIGNED NOT NULL,
         `category_id` INT UNSIGNED NOT NULL,
-        `image_url` VARCHAR(512),
+        `stock` INT UNSIGNED NOT NULL DEFAULT 0,
+        `in_stock` BOOLEAN AS (stock > 0) STORED,
+        `sales_count` INT DEFAULT 0,
+        `rating_avg` DECIMAL(3, 2) NOT NULL DEFAULT 0,
+        `rating_count` INT UNSIGNED NOT NULL DEFAULT 0,
+        `rating_1_count` INT UNSIGNED NOT NULL DEFAULT 0,
+        `rating_2_count` INT UNSIGNED NOT NULL DEFAULT 0,
+        `rating_3_count` INT UNSIGNED NOT NULL DEFAULT 0,
+        `rating_4_count` INT UNSIGNED NOT NULL DEFAULT 0,
+        `rating_5_count` INT UNSIGNED NOT NULL DEFAULT 0,
         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
         `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         FOREIGN KEY (`brand_id`) REFERENCES `brands` (`id`) ON DELETE RESTRICT,
         FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE RESTRICT
+    ) ENGINE = InnoDB;
+
+-- Product Images table (already consolidated)
+CREATE TABLE
+    `product_images` (
+        `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+        `product_id` INT UNSIGNED NOT NULL,
+        `image_url` VARCHAR(512) NOT NULL,
+        `sort_order` INT UNSIGNED NOT NULL DEFAULT 0,
+        `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE
     ) ENGINE = InnoDB;
 
 -- Wishlist table
@@ -126,30 +146,18 @@ CREATE TABLE
         FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE RESTRICT
     ) ENGINE = InnoDB;
 
-ALTER TABLE products
-ADD COLUMN stock INT UNSIGNED NOT NULL DEFAULT 0,
-ADD COLUMN in_stock BOOLEAN AS (stock > 0) STORED;
-
+-- Reviews table (already consolidated)
 CREATE TABLE
-    reviews (
-        id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-        product_id INT UNSIGNED NOT NULL,
-        user_id INT UNSIGNED NOT NULL,
-        rating TINYINT UNSIGNED NOT NULL CHECK (rating BETWEEN 1 AND 5),
-        title VARCHAR(255),
-        comment TEXT NOT NULL,
-        created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-        FOREIGN KEY (product_id) REFERENCES products (id) ON DELETE CASCADE,
-        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
-        UNIQUE KEY one_review_per_product_user (product_id, user_id)
+    `reviews` (
+        `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+        `product_id` INT UNSIGNED NOT NULL,
+        `user_id` INT UNSIGNED NOT NULL,
+        `rating` TINYINT UNSIGNED NOT NULL CHECK (rating BETWEEN 1 AND 5),
+        `title` VARCHAR(255),
+        `comment` TEXT NOT NULL,
+        `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE,
+        FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+        UNIQUE KEY `one_review_per_product_user` (`product_id`, `user_id`)
     ) ENGINE = InnoDB;
-
-ALTER TABLE products
-ADD COLUMN rating_avg DECIMAL(3, 2) NOT NULL DEFAULT 0,
-ADD COLUMN rating_count INT UNSIGNED NOT NULL DEFAULT 0,
-ADD COLUMN rating_1_count INT UNSIGNED NOT NULL DEFAULT 0,
-ADD COLUMN rating_2_count INT UNSIGNED NOT NULL DEFAULT 0,
-ADD COLUMN rating_3_count INT UNSIGNED NOT NULL DEFAULT 0,
-ADD COLUMN rating_4_count INT UNSIGNED NOT NULL DEFAULT 0,
-ADD COLUMN rating_5_count INT UNSIGNED NOT NULL DEFAULT 0;
