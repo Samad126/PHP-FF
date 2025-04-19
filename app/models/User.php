@@ -11,13 +11,28 @@ class User extends Model
         $stmt = self::db()->prepare("SELECT * FROM users WHERE email = ?");
         $stmt->execute([$email]);
         $user = $stmt->fetch();
-        return $user && password_verify($password, $user['password']) ? $user : null;
+        
+        // Note: column name changed from password to password_hash
+        return $user && password_verify($password, $user['password_hash']) ? $user : null;
     }
 
     public static function create($data)
     {
-        $stmt = self::db()->prepare("INSERT INTO users (name, email, password) VALUES (?, ?, ?)");
-        $stmt->execute([$data['name'], $data['email'], password_hash($data['password'], PASSWORD_DEFAULT)]);
+        // Validate password confirmation
+        if ($data['password'] !== $data['password_confirm']) {
+            return false;
+        }
+
+        $stmt = self::db()->prepare(
+            "INSERT INTO users (email, password_hash, fullname) 
+             VALUES (?, ?, ?)"
+        );
+        
+        return $stmt->execute([
+            $data['email'],
+            password_hash($data['password'], PASSWORD_DEFAULT),
+            $data['name'] // This will be stored as fullname in the database
+        ]);
     }
 
     public static function find($id)

@@ -14,10 +14,16 @@ class AuthController extends Controller
             $user = User::attempt($_POST['email'], $_POST['password']);
             if ($user) {
                 Auth::login($user);
-                header('Location: /');
+                
+                // Check if there's a redirect URL
+                $redirect = $_GET['redirect'] ?? '/';
+                header('Location: ' . $redirect);
                 exit;
             }
-            echo "Invalid credentials";
+            
+            $_SESSION['error'] = 'Invalid credentials';
+            $this->view('login', ['error' => 'Invalid credentials']);
+            return;
         }
         $this->view('login');
     }
@@ -25,9 +31,25 @@ class AuthController extends Controller
     public function register()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            User::create($_POST);
-            header('Location: /login');
-            exit;
+            // Validate password confirmation
+            if ($_POST['password'] !== $_POST['password_confirm']) {
+                $_SESSION['error'] = 'Passwords do not match';
+                $this->view('register', ['error' => 'Passwords do not match']);
+                return;
+            }
+
+            // Create user
+            $success = User::create($_POST);
+            
+            if ($success) {
+                $_SESSION['success'] = 'Registration successful. Please login.';
+                header('Location: /login');
+                exit;
+            }
+            
+            $_SESSION['error'] = 'Registration failed';
+            $this->view('register', ['error' => 'Registration failed']);
+            return;
         }
         $this->view('register');
     }
@@ -36,5 +58,6 @@ class AuthController extends Controller
     {
         Auth::logout();
         header('Location: /');
+        exit;
     }
 }
