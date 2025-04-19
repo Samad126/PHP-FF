@@ -1,3 +1,7 @@
+<?php
+use App\core\Auth;
+?>
+
     <!-- HEADER -->
     <header>
         <!-- TOP HEADER -->
@@ -47,23 +51,27 @@
                         <div class="header-ctn">
                             <!-- Wishlist -->
                             <div>
-                                <a href="/wishlist">
+                                <a href="<?= Auth::check() ? '/wishlist' : '/login?redirect=/wishlist' ?>">
                                     <i class="fa fa-heart-o"></i>
                                     <span>Your Wishlist</span>
-                                    <?php
-                                    $wishlistCount = \App\models\Wishlist::getItems() ? count(\App\models\Wishlist::getItems()) : 0;
-                                    ?>
-                                    <div class="qty"><?= $wishlistCount ?></div>
+                                    <?php if (Auth::check()): ?>
+                                        <?php
+                                        $wishlistCount = \App\models\Wishlist::getItems() ? count(\App\models\Wishlist::getItems()) : 0;
+                                        ?>
+                                        <div class="qty"><?= $wishlistCount ?></div>
+                                    <?php endif; ?>
                                 </a>
                             </div>
                             <div>
-                                <a href="/cart">
+                                <a href="<?= Auth::check() ? '/cart' : '/login?redirect=/cart' ?>">
                                     <i class="fa fa-shopping-cart"></i>
                                     <span>Your Cart</span>
-                                    <?php
-                                    $cartCount = \App\models\Cart::getItems() ? count(\App\models\Cart::getItems()) : 0;
-                                    ?>
-                                    <div class="qty cart-count"><?= $cartCount ?></div>
+                                    <?php if (Auth::check()): ?>
+                                        <?php
+                                        $cartCount = \App\models\Cart::getItems() ? count(\App\models\Cart::getItems()) : 0;
+                                        ?>
+                                        <div class="qty cart-count"><?= $cartCount ?></div>
+                                    <?php endif; ?>
                                 </a>
                             </div>
                             <!-- /Wishlist -->
