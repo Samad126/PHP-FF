@@ -147,23 +147,79 @@
 	}
 
 	// Price Slider
-	var priceSlider = document.getElementById('price-slider');
-	if (priceSlider) {
-		noUiSlider.create(priceSlider, {
-			start: [1, 999],
-			connect: true,
-			step: 1,
-			range: {
-				'min': 1,
-				'max': 999
-			}
-		});
+	$(document).ready(function() {
+		var priceSlider = document.getElementById('price-slider');
+		if (priceSlider) {
+			// Get initial values from inputs
+			var minPrice = parseInt($('#price-min').val()) || 0;
+			var maxPrice = parseInt($('#price-max').val()) || 1000;
 
-		priceSlider.noUiSlider.on('update', function( values, handle ) {
-			var value = values[handle];
-			handle ? priceInputMax.value = value : priceInputMin.value = value
-		});
-	}
+			noUiSlider.create(priceSlider, {
+				start: [minPrice, maxPrice],
+				connect: true,
+				step: 1,
+				range: {
+					'min': 0,
+					'max': 1000
+				}
+			});
+
+			// Update input fields when slider changes
+			priceSlider.noUiSlider.on('update', function(values, handle) {
+				var value = Math.round(values[handle]);
+				if (handle === 0) {
+					$('#price-min').val(value);
+				} else {
+					$('#price-max').val(value);
+				}
+			});
+
+			// Trigger filter update when sliding ends
+			priceSlider.noUiSlider.on('change', function(values, handle) {
+				var value = Math.round(values[handle]);
+				if (handle === 0) {
+					updateFilters('price_min', value);
+				} else {
+					updateFilters('price_max', value);
+				}
+			});
+
+			// Update slider when input fields change
+			$('#price-min').on('change', function() {
+				priceSlider.noUiSlider.set([this.value, null]);
+			});
+
+			$('#price-max').on('change', function() {
+				priceSlider.noUiSlider.set([null, this.value]);
+			});
+
+			// Handle qty up/down buttons
+			$('.input-number').each(function() {
+				var $this = $(this),
+					$input = $this.find('input[type="number"]'),
+					up = $this.find('.qty-up'),
+					down = $this.find('.qty-down');
+
+				down.on('click', function() {
+					var value = parseInt($input.val()) - 1;
+					value = value < 0 ? 0 : value;
+					$input.val(value);
+					if ($input.attr('id') === 'price-min') {
+						priceSlider.noUiSlider.set([value, null]);
+					}
+				});
+
+				up.on('click', function() {
+					var value = parseInt($input.val()) + 1;
+					value = value > 1000 ? 1000 : value;
+					$input.val(value);
+					if ($input.attr('id') === 'price-max') {
+						priceSlider.noUiSlider.set([null, value]);
+					}
+				});
+			});
+		}
+	});
 
 })(jQuery);
 
