@@ -2227,3 +2227,71 @@ textarea.input {
     background-color: #999;
 }
 
+.form-actions-top {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.btn-edit, .btn-delete {
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 13px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    border: 1px solid;
+    background: transparent;
+    transition: all 0.3s;
+}
+
+.btn-edit {
+    color: #2B2D42;
+    border-color: #2B2D42;
+}
+
+.btn-edit:hover {
+    background: #2B2D42;
+    color: #FFF;
+}
+
+.btn-delete {
+    color: #D10024;
+    border-color: #D10024;
+}
+
+.btn-delete:hover {
+    background: #D10024;
+    color: #FFF;
+}
+
+.input:disabled {
+    background-color: #f8f9fa;
+    cursor: not-allowed;
+}
+
+.stars label.disabled {
+    cursor: default;
+    opacity: 0.7;
+}
+
+.edit-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.secondary-btn {
+    background: #8D99AE;
+    color: #FFF;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.secondary-btn:hover {
+    background: #2B2D42;
+}

@@ -105,24 +105,75 @@ $avgRating = number_format((float)$stats['avg_rating'], 1);
                     <!-- Review Form -->
                     <div class="col-md-3">
                         <div id="review-form">
-                            <?php if (Auth::check()): ?>
-                                <form class="review-form" action="/reviews/add" method="POST">
+                            <?php if (!Auth::check()): ?>
+                                <p>Please <a href="/login?redirect=<?= urlencode($_SERVER['REQUEST_URI']) ?>">login</a> to submit a review.</p>
+                            <?php else: ?>
+                                <?php 
+                                $userReview = null;
+                                foreach ($reviews as $review) {
+                                    if ($review['user_id'] === Auth::user()['id']) {
+                                        $userReview = $review;
+                                        break;
+                                    }
+                                }
+                                ?>
+                                
+                                <form class="review-form" action="/reviews/<?= $userReview ? 'edit/' . $userReview['id'] : 'add' ?>" method="POST">
                                     <input type="hidden" name="product_id" value="<?= $product['id'] ?>">
-                                    <input class="input" type="text" name="title" placeholder="Review Title">
-                                    <textarea class="input" name="comment" placeholder="Your Review" required></textarea>
+                                    
+                                    <?php if ($userReview): ?>
+                                        <div class="form-actions-top">
+                                            <button type="button" class="btn-edit" onclick="enableReviewEdit()">
+                                                <i class="fa fa-pencil"></i> Edit
+                                            </button>
+                                            <button type="button" class="btn-delete" onclick="deleteReview(<?= $userReview['id'] ?>)">
+                                                <i class="fa fa-trash"></i> Delete
+                                            </button>
+                                        </div>
+                                    <?php endif; ?>
+
+                                    <input class="input" 
+                                           type="text" 
+                                           name="title" 
+                                           placeholder="Review Title"
+                                           value="<?= htmlspecialchars($userReview['title'] ?? '') ?>"
+                                           <?= $userReview ? 'disabled' : '' ?>>
+
+                                    <textarea class="input" 
+                                              name="comment" 
+                                              placeholder="Your Review" 
+                                              required
+                                              <?= $userReview ? 'disabled' : '' ?>><?= htmlspecialchars($userReview['comment'] ?? '') ?></textarea>
+
                                     <div class="input-rating">
                                         <span>Your Rating: </span>
                                         <div class="stars">
                                             <?php for ($i = 5; $i >= 1; $i--): ?>
-                                                <input id="star<?= $i ?>" name="rating" value="<?= $i ?>" type="radio" required>
-                                                <label for="star<?= $i ?>"></label>
+                                                <input id="star<?= $i ?>" 
+                                                       name="rating" 
+                                                       value="<?= $i ?>" 
+                                                       type="radio" 
+                                                       <?= ($userReview && $userReview['rating'] == $i) ? 'checked' : '' ?>
+                                                       <?= $userReview ? 'disabled' : '' ?>
+                                                       required>
+                                                <label for="star<?= $i ?>" <?= $userReview ? 'class="disabled"' : '' ?>></label>
                                             <?php endfor; ?>
                                         </div>
                                     </div>
-                                    <button class="primary-btn">Submit Review</button>
+
+                                    <button type="submit" class="primary-btn" <?= $userReview ? 'style="display: none;"' : '' ?>>
+                                        Submit Review
+                                    </button>
+
+                                    <?php if ($userReview): ?>
+                                        <div class="edit-actions" style="display: none;">
+                                            <button type="submit" class="primary-btn">Update Review</button>
+                                            <button type="button" class="secondary-btn" onclick="cancelReviewEdit()">
+                                                Cancel
+                                            </button>
+                                        </div>
+                                    <?php endif; ?>
                                 </form>
-                            <?php else: ?>
-                                <p>Please <a href="/login?redirect=<?= urlencode($_SERVER['REQUEST_URI']) ?>">login</a> to submit a review.</p>
                             <?php endif; ?>
                         </div>
                     </div>

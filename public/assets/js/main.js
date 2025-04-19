@@ -502,3 +502,74 @@ $(document).ready(function() {
         });
     }
 });
+
+function enableReviewEdit() {
+    const form = document.querySelector('.review-form');
+    const inputs = form.querySelectorAll('input, textarea');
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const editActions = form.querySelector('.edit-actions');
+    const topActions = form.querySelector('.form-actions-top');
+    const starLabels = form.querySelectorAll('.stars label');
+
+    // Enable all inputs
+    inputs.forEach(input => {
+        input.disabled = false;
+    });
+
+    // Show/hide buttons
+    topActions.style.display = 'none';
+    editActions.style.display = 'flex';
+
+    // Enable star rating
+    starLabels.forEach(label => {
+        label.classList.remove('disabled');
+    });
+}
+
+function cancelReviewEdit() {
+    const form = document.querySelector('.review-form');
+    const inputs = form.querySelectorAll('input, textarea');
+    const editActions = form.querySelector('.edit-actions');
+    const topActions = form.querySelector('.form-actions-top');
+    const starLabels = form.querySelectorAll('.stars label');
+
+    // Disable all inputs
+    inputs.forEach(input => {
+        input.disabled = true;
+    });
+
+    // Show/hide buttons
+    topActions.style.display = 'flex';
+    editActions.style.display = 'none';
+
+    // Disable star rating
+    starLabels.forEach(label => {
+        label.classList.add('disabled');
+    });
+
+    // Reset form to original values
+    form.reset();
+}
+
+function deleteReview(reviewId) {
+    if (confirm('Are you sure you want to delete your review?')) {
+        fetch(`/reviews/delete/${reviewId}`, {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.location.reload();
+            } else {
+                alert(data.message || 'Failed to delete review');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to delete review');
+        });
+    }
+}
