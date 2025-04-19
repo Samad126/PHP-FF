@@ -1,103 +1,141 @@
--- First, create users table
+-- Create and select the database
+CREATE DATABASE IF NOT EXISTS `ecommerce` DEFAULT CHARACTER
+SET
+    = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
 
-CREATE DATABASE IF NOT EXISTS ecommerce;
-USE ecommerce;
+USE `ecommerce`;
 
-CREATE TABLE users (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    email VARCHAR(255) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+-- Users table
+CREATE TABLE
+    `users` (
+        `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+        `first_name` VARCHAR(50),
+        `last_name` VARCHAR(50),
+        `email` VARCHAR(100) NOT NULL UNIQUE,
+        `password_hash` VARCHAR(255) NOT NULL,
+        `phone` VARCHAR(20),
+        `is_active` TINYINT (1) NOT NULL DEFAULT 1,
+        `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        PRIMARY KEY (`id`)
+    ) ENGINE = InnoDB;
 
--- Second, create products table
-CREATE TABLE products (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    description TEXT,
-    price DECIMAL(10,2) NOT NULL,
-    old_price DECIMAL(10,2),
-    image VARCHAR(255) NOT NULL,
-    image2 VARCHAR(255),
-    image3 VARCHAR(255),
-    image4 VARCHAR(255),
-    category_id INT,
-    stock INT DEFAULT 0,
-    rating DECIMAL(3,2) DEFAULT 0,
-    review_count INT DEFAULT 0,
-    sizes VARCHAR(255),
-    colors VARCHAR(255),
-    discount INT DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+-- Categories (supporting hierarchical categories)
+CREATE TABLE
+    `categories` (
+        `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+        `name` VARCHAR(100) NOT NULL,
+        `description` TEXT,
+        `parent_id` INT UNSIGNED DEFAULT NULL,
+        `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        PRIMARY KEY (`id`),
+        FOREIGN KEY (`parent_id`) REFERENCES `categories` (`id`) ON DELETE SET NULL
+    ) ENGINE = InnoDB;
 
--- Third, create reviews table (after both users and products exist)
-CREATE TABLE reviews (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    product_id INT NOT NULL,
-    user_id INT NOT NULL,
-    rating INT NOT NULL,
-    comment TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (product_id) REFERENCES products(id),
-    FOREIGN KEY (user_id) REFERENCES users(id)
-);
+-- Brands (each brand belongs to a category)
+CREATE TABLE
+    `brands` (
+        `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+        `name` VARCHAR(100) NOT NULL,
+        `category_id` INT UNSIGNED NOT NULL,
+        `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        PRIMARY KEY (`id`),
+        FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE CASCADE
+    ) ENGINE = InnoDB;
 
--- Then create other tables...
-CREATE TABLE categories (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    slug VARCHAR(100) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+-- Products
+CREATE TABLE
+    `products` (
+        `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+        `name` VARCHAR(150) NOT NULL,
+        `description` TEXT,
+        `price` DECIMAL(10, 2) NOT NULL,
+        `stock` INT UNSIGNED NOT NULL DEFAULT 0,
+        `category_id` INT UNSIGNED NOT NULL,
+        `brand_id` INT UNSIGNED DEFAULT NULL,
+        `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        PRIMARY KEY (`id`),
+        FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE RESTRICT,
+        FOREIGN KEY (`brand_id`) REFERENCES `brands` (`id`) ON DELETE SET NULL
+    ) ENGINE = InnoDB;
 
-CREATE TABLE cart (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    product_id INT NOT NULL,
-    quantity INT NOT NULL DEFAULT 1,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id),
-    FOREIGN KEY (product_id) REFERENCES products(id)
-);
+-- Wishlist (many-to-many between users and products)
+CREATE TABLE
+    `wishlists` (
+        `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+        `user_id` INT UNSIGNED NOT NULL,
+        `product_id` INT UNSIGNED NOT NULL,
+        `added_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (`id`),
+        UNIQUE KEY `ux_user_product` (`user_id`, `product_id`),
+        FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+        FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE
+    ) ENGINE = InnoDB;
 
-CREATE TABLE wishlist (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    product_id INT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id),
-    FOREIGN KEY (product_id) REFERENCES products(id)
-);
+-- Cart (many-to-many with quantity)
+CREATE TABLE
+    `carts` (
+        `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+        `user_id` INT UNSIGNED NOT NULL,
+        `product_id` INT UNSIGNED NOT NULL,
+        `quantity` INT UNSIGNED NOT NULL DEFAULT 1,
+        `added_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (`id`),
+        UNIQUE KEY `ux_cart_user_product` (`user_id`, `product_id`),
+        FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+        FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE
+    ) ENGINE = InnoDB;
 
--- Insert sample categories
-INSERT INTO categories (name, slug) VALUES
-('Laptops', 'laptops'),
-('Smartphones', 'smartphones'),
-('Cameras', 'cameras'),
-('Accessories', 'accessories');
+-- Addresses (billing/shipping)
+CREATE TABLE
+    `addresses` (
+        `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+        `user_id` INT UNSIGNED NOT NULL,
+        `address_line1` VARCHAR(255) NOT NULL,
+        `address_line2` VARCHAR(255),
+        `city` VARCHAR(100) NOT NULL,
+        `state` VARCHAR(100) NOT NULL,
+        `postal_code` VARCHAR(20) NOT NULL,
+        `country` VARCHAR(100) NOT NULL,
+        `phone` VARCHAR(20),
+        `is_default` TINYINT (1) NOT NULL DEFAULT 0,
+        `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        PRIMARY KEY (`id`),
+        FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+    ) ENGINE = InnoDB;
 
--- Insert sample products
-INSERT INTO products (name, description, price, old_price, image, image2, image3, image4, category_id, stock, rating, review_count, sizes, colors, discount) VALUES
-('MacBook Pro 16"', 'Latest MacBook Pro with M1 chip', 2499.99, 2699.99, '/assets/img/macbook-1.jpg', '/assets/img/macbook-2.jpg', '/assets/img/macbook-3.jpg', '/assets/img/macbook-4.jpg', 1, 50, 4.8, 245, NULL, 'Silver,Space Gray', 7),
-('iPhone 13 Pro', 'Apple iPhone 13 Pro with A15 Bionic', 999.99, 1099.99, '/assets/img/iphone-1.jpg', '/assets/img/iphone-2.jpg', '/assets/img/iphone-3.jpg', '/assets/img/iphone-4.jpg', 2, 100, 4.9, 189, '128GB,256GB,512GB', 'Graphite,Gold,Sierra Blue', 9),
-('Sony A7 IV', 'Full-frame mirrorless camera', 2499.99, 2699.99, '/assets/img/sony-1.jpg', '/assets/img/sony-2.jpg', '/assets/img/sony-3.jpg', '/assets/img/sony-4.jpg', 3, 25, 4.7, 89, NULL, 'Black', 0),
-('AirPods Pro', 'Wireless noise cancelling earbuds', 249.99, 279.99, '/assets/img/airpods-1.jpg', '/assets/img/airpods-2.jpg', '/assets/img/airpods-3.jpg', '/assets/img/airpods-4.jpg', 4, 200, 4.6, 567, NULL, 'White', 11);
+-- Orders
+CREATE TABLE
+    `orders` (
+        `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+        `user_id` INT UNSIGNED NOT NULL,
+        `order_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        `status` VARCHAR(50) NOT NULL DEFAULT 'pending',
+        `total_amount` DECIMAL(10, 2) NOT NULL,
+        `shipping_address_id` INT UNSIGNED NOT NULL,
+        `billing_address_id` INT UNSIGNED NOT NULL,
+        `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        PRIMARY KEY (`id`),
+        FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+        FOREIGN KEY (`shipping_address_id`) REFERENCES `addresses` (`id`) ON DELETE RESTRICT,
+        FOREIGN KEY (`billing_address_id`) REFERENCES `addresses` (`id`) ON DELETE RESTRICT
+    ) ENGINE = InnoDB;
 
--- Insert sample user
-INSERT INTO users (name, email, password) VALUES
-('John Doe', 'john@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi'); -- password: password
-
--- Insert sample reviews
-INSERT INTO reviews (product_id, user_id, rating, comment) VALUES
-(1, 1, 5, 'Amazing laptop! The M1 chip is incredibly fast.'),
-(1, 1, 4, 'Great build quality but a bit expensive.'),
-(2, 1, 5, 'Best iPhone ever! Camera quality is outstanding.'),
-(3, 1, 4, 'Professional grade camera with excellent features.');
-
--- Add indexes for better performance
-ALTER TABLE products ADD INDEX idx_category (category_id);
-ALTER TABLE reviews ADD INDEX idx_product (product_id);
-ALTER TABLE cart ADD INDEX idx_user_product (user_id, product_id);
-ALTER TABLE wishlist ADD INDEX idx_user_product (user_id, product_id);
+-- Order Items
+CREATE TABLE
+    `order_items` (
+        `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+        `order_id` INT UNSIGNED NOT NULL,
+        `product_id` INT UNSIGNED NOT NULL,
+        `quantity` INT UNSIGNED NOT NULL DEFAULT 1,
+        `unit_price` DECIMAL(10, 2) NOT NULL,
+        `total_price` DECIMAL(10, 2) NOT NULL AS (quantity * unit_price) PERSISTENT,
+        PRIMARY KEY (`id`),
+        FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE,
+        FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE RESTRICT
+    ) ENGINE = InnoDB;
