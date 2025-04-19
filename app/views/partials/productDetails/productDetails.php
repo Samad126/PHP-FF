@@ -19,22 +19,7 @@
             labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
             laboris nisi ut aliquip ex ea commodo consequat.</p>
 
-        <div class="product-options">
-            <label>
-                Size
-                <select class="input-select">
-                    <option value="0">X</option>
-                </select>
-            </label>
-            <label>
-                Color
-                <select class="input-select">
-                    <option value="0">Red</option>
-                </select>
-            </label>
-        </div>
-
-        <div class="add-to-cart">
+        <div class="add-to-cart" style="margin: 30px 0;">
             <div class="qty-label">
                 Qty
                 <div class="input-number">
