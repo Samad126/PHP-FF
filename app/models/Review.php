@@ -90,4 +90,30 @@ class Review extends Model
             throw $e;
         }
     }
+
+    public static function findUserReview($productId, $userId)
+    {
+        $sql = "SELECT r.*, u.fullname as user_name 
+                FROM reviews r 
+                JOIN users u ON r.user_id = u.id 
+                WHERE r.product_id = ? AND r.user_id = ?";
+        $stmt = self::db()->prepare($sql);
+        $stmt->execute([$productId, $userId]);
+        return $stmt->fetch();
+    }
+
+    public static function update($reviewId, $userId, $data)
+    {
+        $sql = "UPDATE reviews 
+                SET rating = ?, title = ?, comment = ? 
+                WHERE id = ? AND user_id = ?";
+        $stmt = self::db()->prepare($sql);
+        return $stmt->execute([
+            $data['rating'],
+            $data['title'],
+            $data['comment'],
+            $reviewId,
+            $userId
+        ]);
+    }
 }

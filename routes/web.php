@@ -19,8 +19,9 @@ Router::get('/logout', [AuthController::class, 'logout']);
 // Home routes
 Router::get('/', [HomeController::class, 'index']);
 
-// Add the review route
+// Review routes
 Router::post('/reviews/add', [ReviewController::class, 'add']);
+Router::post('/reviews/edit/{id}', [ReviewController::class, 'edit']);
 
 // Product routes
 Router::get('/products', [ProductController::class, 'index']);
