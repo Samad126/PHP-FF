@@ -3,7 +3,7 @@
         <h2 class="product-name"><?= htmlspecialchars($product['name']) ?></h2>
         <div>
             <div class="product-rating">
-                <?php for($i = 1; $i <= 5; $i++): ?>
+                <?php for ($i = 1; $i <= 5; $i++): ?>
                     <i class="fa fa-star<?= $i > ($product['rating'] ?? 0) ? '-o' : '' ?>"></i>
                 <?php endfor; ?>
             </div>
@@ -25,19 +25,19 @@
         <!-- Add to cart form -->
         <div class="add-to-cart">
             <?php if ($product['stock'] > 0): ?>
-                <div class="qty-label">
-                    Qty
-                    <div class="input-number">
-                        <input type="number" value="1" min="1" max="<?= $product['stock'] ?>" id="product-quantity">
-                        <span class="qty-up">+</span>
-                        <span class="qty-down">-</span>
-                    </div>
-                </div>
                 <?php if (isset($cartItems) && in_array($product['id'], $cartItems)): ?>
                     <button class="add-to-cart-btn in-cart" disabled>
                         <i class="fa fa-shopping-cart"></i> In Cart
                     </button>
                 <?php else: ?>
+                    <div class="qty-label">
+                        Qty
+                        <div class="input-number">
+                            <input type="number" value="1" min="1" max="<?= $product['stock'] ?>" id="product-quantity">
+                            <span class="qty-up">+</span>
+                            <span class="qty-down">-</span>
+                        </div>
+                    </div>
                     <button class="add-to-cart-btn" onclick="addToCart(<?= $product['id'] ?>)">
                         <i class="fa fa-shopping-cart"></i> Add to Cart
                     </button>
@@ -51,9 +51,10 @@
 
         <ul class="product-btns">
             <li>
-                <button class="add-to-wishlist <?= in_array($product['id'], $wishlistItems) ? 'in-wishlist' : '' ?>" 
-                        onclick="toggleWishlist(<?= $product['id'] ?>)">
-                    <i class="fa fa-heart-o"></i> Add to Wishlist
+                <button class="add-to-wishlist <?= in_array($product['id'], $wishlistItems) ? 'in-wishlist' : '' ?>"
+                    onclick="toggleWishlist(<?= $product['id'] ?>)">
+                    <i class="fa fa-<?= in_array($product['id'], $wishlistItems) ? 'heart' : 'heart-o' ?>"></i>
+                    <span class="tooltipp"><?= in_array($product['id'], $wishlistItems) ? 'remove from wishlist' : 'add to wishlist' ?></span>
                 </button>
             </li>
         </ul>
