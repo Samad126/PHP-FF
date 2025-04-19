@@ -44,12 +44,6 @@ use App\core\Auth;
                                        placeholder="Search here" 
                                        style="border-radius: 40px 0px 0px 40px;" 
                                        value="<?= htmlspecialchars($_GET['q'] ?? '') ?>">
-                                <!-- Preserve existing filters -->
-                                <?php foreach(['category', 'brand', 'price_min', 'price_max', 'sort', 'per_page'] as $param): ?>
-                                    <?php if (!empty($_GET[$param])): ?>
-                                        <input type="hidden" name="<?= $param ?>" value="<?= htmlspecialchars($_GET[$param]) ?>">
-                                    <?php endif; ?>
-                                <?php endforeach; ?>
                                 <button class="search-btn" type="submit">Search</button>
                             </form>
                         </div>
