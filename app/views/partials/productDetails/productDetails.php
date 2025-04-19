@@ -1,45 +1,56 @@
 <div class="col-md-5">
     <div class="product-details">
-        <h2 class="product-name">product name goes here</h2>
+        <h2 class="product-name"><?= htmlspecialchars($product['name']) ?></h2>
         <div>
             <div class="product-rating">
-                <i class="fa fa-star"></i>
-                <i class="fa fa-star"></i>
-                <i class="fa fa-star"></i>
-                <i class="fa fa-star"></i>
-                <i class="fa fa-star-o"></i>
+                <?php for($i = 1; $i <= 5; $i++): ?>
+                    <i class="fa fa-star<?= $i > ($product['rating'] ?? 0) ? '-o' : '' ?>"></i>
+                <?php endfor; ?>
             </div>
-            <a class="review-link" href="#">10 Review(s) | Add your review</a>
+            <a class="review-link" href="#reviews">
+                <?= $product['review_count'] ?? 0 ?> Review(s) | Add your review
+            </a>
         </div>
         <div>
-            <h3 class="product-price">$980.00 <del class="product-old-price">$990.00</del></h3>
-            <span class="product-available">In Stock</span>
+            <h3 class="product-price">
+                $<?= number_format($product['price'], 2) ?>
+                <?php if (isset($product['old_price']) && $product['old_price'] > $product['price']): ?>
+                    <del class="product-old-price">$<?= number_format($product['old_price'], 2) ?></del>
+                <?php endif; ?>
+            </h3>
+            <span class="product-available"><?= $product['stock'] > 0 ? 'In Stock' : 'Out of Stock' ?></span>
         </div>
-        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut
-            labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
-            laboris nisi ut aliquip ex ea commodo consequat.</p>
+        <p><?= htmlspecialchars($product['description']) ?></p>
 
-        <div class="add-to-cart" style="margin: 30px 0;">
+        <!-- Add to cart form -->
+        <div class="add-to-cart">
             <div class="qty-label">
                 Qty
                 <div class="input-number">
-                    <input type="number">
+                    <input type="number" value="1" min="1" max="<?= $product['stock'] ?>">
                     <span class="qty-up">+</span>
                     <span class="qty-down">-</span>
                 </div>
             </div>
-            <button class="add-to-cart-btn"><i class="fa fa-shopping-cart"></i> add to cart</button>
+            <button class="add-to-cart-btn" onclick="addToCart(<?= $product['id'] ?>)">
+                <i class="fa fa-shopping-cart"></i> Add to Cart
+            </button>
         </div>
 
         <ul class="product-btns">
-            <li><a href="#"><i class="fa fa-heart-o"></i> add to wishlist</a></li>
-            <li><a href="#"><i class="fa fa-exchange"></i> add to compare</a></li>
+            <li>
+                <button class="add-to-wishlist <?= in_array($product['id'], $wishlistItems) ? 'in-wishlist' : '' ?>" 
+                        onclick="toggleWishlist(<?= $product['id'] ?>)">
+                    <i class="fa fa-heart-o"></i> Add to Wishlist
+                </button>
+            </li>
         </ul>
 
         <ul class="product-links">
             <li>Category:</li>
-            <li><a href="#">Headphones</a></li>
-            <li><a href="#">Accessories</a></li>
+            <li><a href="/products?category=<?= $product['category_id'] ?>"><?= htmlspecialchars($product['category_name']) ?></a></li>
+            <li>Brand:</li>
+            <li><a href="/products?brand=<?= $product['brand_id'] ?>"><?= htmlspecialchars($product['brand_name']) ?></a></li>
         </ul>
 
         <ul class="product-links">

@@ -198,4 +198,29 @@ class Product extends Model
             'max' => $maxPrice
         ];
     }
+
+    public static function findWithDetails($id)
+    {
+        $sql = "SELECT p.*, 
+                b.name as brand_name, 
+                c.name as category_name,
+                GROUP_CONCAT(pi.image_url ORDER BY pi.sort_order) as images
+                FROM products p 
+                LEFT JOIN brands b ON p.brand_id = b.id 
+                LEFT JOIN categories c ON p.category_id = c.id
+                LEFT JOIN product_images pi ON p.id = pi.product_id
+                WHERE p.id = ?
+                GROUP BY p.id";
+                
+        $stmt = self::db()->prepare($sql);
+        $stmt->execute([$id]);
+        $product = $stmt->fetch();
+        
+        if ($product) {
+            // Convert images string to array
+            $product['images'] = $product['images'] ? explode(',', $product['images']) : [];
+        }
+        
+        return $product;
+    }
 }

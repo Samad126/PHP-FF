@@ -57,15 +57,25 @@ class ProductController extends Controller
 
     public function show($id)
     {
-        $product = Product::find($id);
+        $product = Product::findWithDetails($id);
         if (!$product) {
             http_response_code(404);
             return $this->view("404");
         }
         
         $related = Product::getRelated($id);
-        $topSellingProducts = Product::getTopSelling(3); // Get top 3 selling products for sidebar
+        $topSellingProducts = Product::getTopSelling(3);
         
-        $this->view("productDetails", compact('product', 'related', 'topSellingProducts'));
+        // Get wishlist and cart items for the current user
+        $wishlistItems = Auth::check() ? array_column(Wishlist::getItems(), 'product_id') : [];
+        $cartItems = Auth::check() ? array_column(Cart::getItems(), 'id') : [];
+        
+        $this->view("productDetails", compact(
+            'product', 
+            'related', 
+            'topSellingProducts',
+            'wishlistItems',
+            'cartItems'
+        ));
     }
 }

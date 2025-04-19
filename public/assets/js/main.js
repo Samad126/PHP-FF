@@ -66,10 +66,8 @@
 	/////////////////////////////////////////
 
 	// Product Main img Slick
-	$('#product-main-img').on('init', function(event, slick) {
-		$(this).css({opacity: 1, visibility: 'visible'});
-	}).slick({
-		infinfite: true,
+	$('#product-main-img').slick({
+		infinite: true,
 		speed: 300,
 		dots: false,
 		arrows: true,
@@ -78,9 +76,7 @@
 	});
 
 	// Product imgs Slick
-	$('#product-imgs').on('init', function(event, slick) {
-		$(this).css({opacity: 1, visibility: 'visible'});
-	}).slick({
+	$('#product-imgs').slick({
 		slidesToShow: 3,
 		slidesToScroll: 1,
 		arrows: true,
