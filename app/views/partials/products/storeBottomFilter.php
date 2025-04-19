@@ -1,10 +1,16 @@
 <div class="store-filter clearfix">
     <div class="store-sort">
-        <span>SHOWING <?= $showing_start ?? 0 ?>-<?= $showing_end ?? 0 ?> OF <?= $total ?? 0 ?> PRODUCTS</span>
+        <?php
+        $perPage = $filters['per_page'] ?? 20;
+        $currentPage = $filters['page'] ?? 1;
+        $showing_start = ($currentPage - 1) * $perPage + 1;
+        $showing_end = min($showing_start + $perPage - 1, $total);
+        ?>
+        <span>SHOWING <?= $showing_start ?>-<?= $showing_end ?> OF <?= $total ?> PRODUCTS</span>
     </div>
     <ul class="store-pagination">
         <?php 
-        $totalPages = ceil($total / ($filters['per_page'] ?? 20));
+        $totalPages = ceil($total / $perPage);
         $currentPage = $filters['page'] ?? 1;
         
         // Previous page
