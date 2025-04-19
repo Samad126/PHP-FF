@@ -22,6 +22,7 @@ Router::get('/', [HomeController::class, 'index']);
 // Review routes
 Router::post('/reviews/add', [ReviewController::class, 'add']);
 Router::post('/reviews/edit/{id}', [ReviewController::class, 'edit']);
+Router::post('/reviews/delete/{id}', [ReviewController::class, 'delete']);
 
 // Product routes
 Router::get('/products', [ProductController::class, 'index']);

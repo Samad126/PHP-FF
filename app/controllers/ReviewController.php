@@ -107,4 +107,51 @@ class ReviewController extends Controller
             exit;
         }
     }
+
+    public function delete($id)
+    {
+        try {
+            if (!Auth::check()) {
+                throw new \Exception('Please login to delete reviews');
+            }
+
+            $review = Review::find($id);
+            
+            if (!$review) {
+                throw new \Exception('Review not found');
+            }
+
+            if ($review['user_id'] !== Auth::user()['id']) {
+                throw new \Exception('You can only delete your own reviews');
+            }
+
+            Review::delete($id);
+
+            if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest') {
+                echo json_encode([
+                    'success' => true,
+                    'message' => 'Review deleted successfully'
+                ]);
+                exit;
+            }
+
+            $_SESSION['success'] = 'Review deleted successfully';
+            header('Location: ' . $_SERVER['HTTP_REFERER']);
+            exit;
+
+        } catch (\Exception $e) {
+            if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest') {
+                http_response_code(400);
+                echo json_encode([
+                    'success' => false,
+                    'message' => $e->getMessage()
+                ]);
+                exit;
+            }
+
+            $_SESSION['error'] = $e->getMessage();
+            header('Location: ' . $_SERVER['HTTP_REFERER']);
+            exit;
+        }
+    }
 }

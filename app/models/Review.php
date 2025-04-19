@@ -116,4 +116,17 @@ class Review extends Model
             $userId
         ]);
     }
+
+    public static function find($id)
+    {
+        $stmt = self::db()->prepare("SELECT * FROM reviews WHERE id = ?");
+        $stmt->execute([$id]);
+        return $stmt->fetch();
+    }
+
+    public static function delete($id)
+    {
+        $stmt = self::db()->prepare("DELETE FROM reviews WHERE id = ?");
+        return $stmt->execute([$id]);
+    }
 }
