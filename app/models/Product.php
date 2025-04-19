@@ -44,11 +44,11 @@ class Product extends Model
                 LEFT JOIN product_images pi ON p.id = pi.product_id AND pi.sort_order = 0
                 ORDER BY p.created_at DESC 
                 LIMIT :limit";
-                
+
         $stmt = self::db()->prepare($sql);
         $stmt->bindValue(':limit', $limit, \PDO::PARAM_INT);
         $stmt->execute();
-        
+
         return $stmt->fetchAll();
     }
 
@@ -73,7 +73,7 @@ class Product extends Model
     {
         $where = [];
         $params = [];
-        
+
         if (!empty($filters['q'])) {
             $searchTerm = trim($filters['q']);
             $where[] = "(
@@ -85,39 +85,43 @@ class Product extends Model
             )";
             $params[':search'] = '%' . $searchTerm . '%';
         }
-        
+
         if (!empty($filters['category'])) {
             $categories = explode(',', $filters['category']);
-            $categoryPlaceholders = array_map(function($i) { return ':category'.$i; }, array_keys($categories));
+            $categoryPlaceholders = array_map(function ($i) {
+                return ':category' . $i;
+            }, array_keys($categories));
             $where[] = "p.category_id IN (" . implode(',', $categoryPlaceholders) . ")";
             foreach ($categories as $i => $cat) {
-                $params[':category'.$i] = $cat;
+                $params[':category' . $i] = $cat;
             }
         }
-        
+
         if (!empty($filters['brand'])) {
             $brands = explode(',', $filters['brand']);
-            $brandPlaceholders = array_map(function($i) { return ':brand'.$i; }, array_keys($brands));
+            $brandPlaceholders = array_map(function ($i) {
+                return ':brand' . $i;
+            }, array_keys($brands));
             $where[] = "p.brand_id IN (" . implode(',', $brandPlaceholders) . ")";
             foreach ($brands as $i => $brand) {
-                $params[':brand'.$i] = $brand;
+                $params[':brand' . $i] = $brand;
             }
         }
-        
+
         if (!empty($filters['price_min'])) {
             $where[] = "p.price >= :price_min";
             $params[':price_min'] = $filters['price_min'];
         }
-        
+
         if (!empty($filters['price_max'])) {
             $where[] = "p.price <= :price_max";
             $params[':price_max'] = $filters['price_max'];
         }
-        
+
         $whereClause = !empty($where) ? "WHERE " . implode(" AND ", $where) : "";
-        
+
         // Define the ORDER BY clause based on sort parameter
-        $orderBy = match($filters['sort'] ?? 'newest') {
+        $orderBy = match ($filters['sort'] ?? 'newest') {
             'price_asc' => 'p.price ASC',
             'price_desc' => 'p.price DESC',
             'name_asc' => 'p.name ASC',
@@ -125,43 +129,48 @@ class Product extends Model
             'newest' => 'p.id DESC',
             default => 'p.id DESC'
         };
-        
+
         // Get total count for pagination
         $countSql = "SELECT COUNT(DISTINCT p.id) 
                      FROM products p 
                      LEFT JOIN brands b ON p.brand_id = b.id 
                      LEFT JOIN categories c ON p.category_id = c.id 
                      $whereClause";
-        
+
         $countStmt = self::db()->prepare($countSql);
         $countStmt->execute($params);
         $total = $countStmt->fetchColumn();
-        
+
         // Pagination
         $page = max(1, (int)($filters['page'] ?? 1));
         $perPage = (int)($filters['per_page'] ?? 20);
         $offset = ($page - 1) * $perPage;
-        
+
         // Main query with DISTINCT to avoid duplicates
-        $sql = "SELECT DISTINCT p.*, b.name as brand_name, c.name as category_name 
-                FROM products p 
-                LEFT JOIN brands b ON p.brand_id = b.id 
-                LEFT JOIN categories c ON p.category_id = c.id 
-                $whereClause 
-                ORDER BY $orderBy 
-                LIMIT :offset, :per_page";
-        
+        $sql = "SELECT DISTINCT 
+            p.*, 
+            b.name as brand_name, 
+            c.name as category_name, 
+            pi.image_url as image_url
+        FROM products p 
+        LEFT JOIN brands b ON p.brand_id = b.id 
+        LEFT JOIN categories c ON p.category_id = c.id 
+        LEFT JOIN product_images pi ON p.id = pi.product_id AND pi.sort_order = 0
+        $whereClause 
+        ORDER BY $orderBy 
+        LIMIT :offset, :per_page";
+
         $stmt = self::db()->prepare($sql);
-        
+
         // Bind all parameters
         foreach ($params as $key => $value) {
             $stmt->bindValue($key, $value);
         }
         $stmt->bindValue(':offset', $offset, \PDO::PARAM_INT);
         $stmt->bindValue(':per_page', $perPage, \PDO::PARAM_INT);
-        
+
         $stmt->execute();
-        
+
         return [
             'items' => $stmt->fetchAll(),
             'total' => $total,
@@ -181,9 +190,9 @@ class Product extends Model
         ");
         $stmt->execute();
         $range = $stmt->fetch(\PDO::FETCH_ASSOC);
-        
+
         $maxPrice = (int)$range['max_price'];
-        
+
         // Round up max price to make it more user-friendly
         if ($maxPrice > 10000) {
             // Round to nearest thousand for very high prices
@@ -192,7 +201,7 @@ class Product extends Model
             // Round to nearest hundred for moderate prices
             $maxPrice = ceil($maxPrice / 100) * 100;
         }
-        
+
         return [
             'min' => 0, // Always start from 0
             'max' => $maxPrice
@@ -211,16 +220,16 @@ class Product extends Model
                 LEFT JOIN product_images pi ON p.id = pi.product_id
                 WHERE p.id = ?
                 GROUP BY p.id";
-                
+
         $stmt = self::db()->prepare($sql);
         $stmt->execute([$id]);
         $product = $stmt->fetch();
-        
+
         if ($product) {
             // Convert images string to array
             $product['images'] = $product['images'] ? explode(',', $product['images']) : [];
         }
-        
+
         return $product;
     }
 }
