@@ -26,6 +26,30 @@ VALUES
         '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
         'Mike Wilson',
         NOW()
+    ),
+    (
+        'sarah.parker@example.com',
+        '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+        'Sarah Parker',
+        NOW()
+    ),
+    (
+        'david.brown@example.com',
+        '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+        'David Brown',
+        NOW()
+    ),
+    (
+        'emma.wilson@example.com',
+        '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+        'Emma Wilson',
+        NOW()
+    ),
+    (
+        'james.taylor@example.com',
+        '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+        'James Taylor',
+        NOW()
     );
 
 -- Categories (with parent-child relationships)
