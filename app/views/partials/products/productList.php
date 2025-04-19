@@ -16,14 +16,17 @@
                             style="min-height: 280px; object-fit: contain; object-position: center;"
                             loading="lazy">
 
-                        <?php if (isset($product['discount_percentage']) && $product['discount_percentage'] > 0): ?>
-                            <div class="product-label">
+                        <div class="product-label">
+                            <?php if (isset($product['discount_percentage']) && $product['discount_percentage'] > 0): ?>
                                 <span class="sale">-<?= $product['discount_percentage'] ?>%</span>
-                                <?php if (isset($product['is_new']) && $product['is_new']): ?>
-                                    <span class="new">NEW</span>
-                                <?php endif; ?>
-                            </div>
-                        <?php endif; ?>
+                            <?php endif; ?>
+                            <?php if (isset($product['is_new']) && $product['is_new']): ?>
+                                <span class="new">NEW</span>
+                            <?php endif; ?>
+                            <?php if ($product['stock'] <= 0): ?>
+                                <span class="out-of-stock">OUT OF STOCK</span>
+                            <?php endif; ?>
+                        </div>
                     </div>
                     <div class="product-body">
                         <p class="product-category"><?= htmlspecialchars($product['category_name'] ?? '') ?></p>
