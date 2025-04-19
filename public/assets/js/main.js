@@ -166,3 +166,135 @@
 	}
 
 })(jQuery);
+
+function addToWishlist(productId) {
+    fetch(`/wishlist/add/${productId}`, {
+        method: 'POST',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json().then(data => ({status: response.status, data})))
+    .then(({status, data}) => {
+        if (status === 200 && data.success) {
+            showNotification(data.message || 'Product added to wishlist!', 'success');
+        } else {
+            showNotification(data.message || 'Failed to add product to wishlist', 'error');
+            // if (status === 401) {
+            //     setTimeout(() => {
+            //         window.location.href = '/login?redirect=' + encodeURIComponent(window.location.pathname);
+            //     }, 2000);
+            // }
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('An error occurred', 'error');
+    });
+}
+
+function addToCart(productId) {
+    fetch(`/cart/add/${productId}`, {
+        method: 'POST',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json().then(data => ({status: response.status, data})))
+    .then(({status, data}) => {
+        if (status === 200 && data.success) {
+            showNotification(data.message || 'Product added to cart!', 'success');
+            // Update cart count if available
+            if (data.cartCount !== undefined) {
+                updateCartCount(data.cartCount);
+            }
+        } else {
+            showNotification(data.message || 'Failed to add product to cart', 'error');
+            // if (status === 401) {
+            //     setTimeout(() => {
+            //         window.location.href = '/login?redirect=' + encodeURIComponent(window.location.pathname);
+            //     }, 2000);
+            // }
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('An error occurred', 'error');
+    });
+}
+
+function quickView(productId) {
+    fetch(`/products/${productId}/quick-view`)
+    .then(response => response.text())
+    .then(html => {
+        // Assuming you have a modal to show the quick view
+        document.getElementById('quickViewModal').innerHTML = html;
+        $('#quickViewModal').modal('show');
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('Failed to load quick view', 'error');
+    });
+}
+
+function showNotification(message, type) {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.textContent = message;
+
+    // Style the notification
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 15px 25px;
+        border-radius: 4px;
+        z-index: 9999;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        animation: slideIn 0.3s ease;
+    `;
+
+    // Add specific styles based on type
+    if (type === 'success') {
+        notification.style.backgroundColor = '#4CAF50';
+        notification.style.color = 'white';
+    } else if (type === 'error') {
+        notification.style.backgroundColor = '#f44336';
+        notification.style.color = 'white';
+    }
+
+    // Add to DOM
+    document.body.appendChild(notification);
+
+    // Remove after 3 seconds
+    setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => {
+            notification.remove();
+        }, 300);
+    }, 3000);
+}
+
+function updateCartCount(count) {
+    const cartCountElement = document.querySelector('.cart-count');
+    if (cartCountElement) {
+        cartCountElement.textContent = count;
+    }
+}
+
+// Add animation keyframes to the document
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes slideOut {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(100%); opacity: 0; }
+    }
+`;
+document.head.appendChild(style);

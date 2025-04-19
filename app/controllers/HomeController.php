@@ -9,7 +9,11 @@ class HomeController extends Controller
 {
     public function index()
     {
-        $products = Product::getFeatured();
-        $this->view("home", ['products' => $products]);
+        $featuredProducts = Product::getFeatured();
+        $newProducts = Product::getNewProducts();
+        $this->view("home", [
+            'products' => $featuredProducts,
+            'newProducts' => $newProducts
+        ]);
     }
 }
