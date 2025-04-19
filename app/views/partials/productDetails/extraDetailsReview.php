@@ -2,7 +2,7 @@
 use App\models\Review;
 use App\core\Auth;
 
-$reviews = Review::forProduct($product['id']);
+$reviews = $reviewData['items'];
 $stats = Review::getProductStats($product['id']);
 $totalReviews = (int)$stats['total_reviews'];
 $avgRating = number_format((float)$stats['avg_rating'], 1);
@@ -94,13 +94,29 @@ $avgRating = number_format((float)$stats['avg_rating'], 1);
                                     </li>
                                 <?php endforeach; ?>
                             </ul>
-                            <?php if (count($reviews) > 5): ?>
+                            <?php if ($reviewData['total_pages'] > 1): ?>
                                 <ul class="reviews-pagination">
-                                    <li class="active">1</li>
-                                    <li><a href="#">2</a></li>
-                                    <li><a href="#">3</a></li>
-                                    <li><a href="#">4</a></li>
-                                    <li><a href="#"><i class="fa fa-angle-right"></i></a></li>
+                                    <?php if ($reviewData['page'] > 1): ?>
+                                        <li>
+                                            <a href="?review_page=<?= $reviewData['page'] - 1 ?>#reviews">
+                                                <i class="fa fa-angle-left"></i>
+                                            </a>
+                                        </li>
+                                    <?php endif; ?>
+
+                                    <?php for ($i = 1; $i <= $reviewData['total_pages']; $i++): ?>
+                                        <li <?= $i == $reviewData['page'] ? 'class="active"' : '' ?>>
+                                            <a href="?review_page=<?= $i ?>#reviews"><?= $i ?></a>
+                                        </li>
+                                    <?php endfor; ?>
+
+                                    <?php if ($reviewData['page'] < $reviewData['total_pages']): ?>
+                                        <li>
+                                            <a href="?review_page=<?= $reviewData['page'] + 1 ?>#reviews">
+                                                <i class="fa fa-angle-right"></i>
+                                            </a>
+                                        </li>
+                                    <?php endif; ?>
                                 </ul>
                             <?php endif; ?>
                         </div>

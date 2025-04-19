@@ -6,16 +6,38 @@ use App\core\Model;
 
 class Review extends Model
 {
-    public static function forProduct($productId)
+    public static function forProduct($productId, $page = 1, $perPage = 5)
     {
+        $offset = ($page - 1) * $perPage;
+        
         $sql = "SELECT r.*, u.fullname as user_name 
                 FROM reviews r 
                 JOIN users u ON r.user_id = u.id 
-                WHERE r.product_id = ? 
-                ORDER BY r.created_at DESC";
+                WHERE r.product_id = :product_id 
+                ORDER BY r.created_at DESC
+                LIMIT :offset, :per_page";
+                
+        $stmt = self::db()->prepare($sql);
+        $stmt->bindValue(':product_id', $productId, \PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, \PDO::PARAM_INT);
+        $stmt->bindValue(':per_page', $perPage, \PDO::PARAM_INT);
+        $stmt->execute();
+        
+        return [
+            'items' => $stmt->fetchAll(),
+            'total' => self::getProductReviewCount($productId),
+            'page' => $page,
+            'per_page' => $perPage,
+            'total_pages' => ceil(self::getProductReviewCount($productId) / $perPage)
+        ];
+    }
+
+    private static function getProductReviewCount($productId)
+    {
+        $sql = "SELECT COUNT(*) FROM reviews WHERE product_id = ?";
         $stmt = self::db()->prepare($sql);
         $stmt->execute([$productId]);
-        return $stmt->fetchAll();
+        return $stmt->fetchColumn();
     }
 
     public static function getProductStats($productId)

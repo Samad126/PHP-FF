@@ -64,8 +64,11 @@ class ProductController extends Controller
             return $this->view("404");
         }
         
+        $page = isset($_GET['review_page']) ? max(1, (int)$_GET['review_page']) : 1;
+        $perPage = 5;
+        
         $related = Product::getRelated($id);
-        $reviews = Review::forProduct($id);
+        $reviewData = Review::forProduct($id, $page, $perPage);
         $reviewStats = Review::getProductStats($id);
         
         $wishlistItems = Auth::check() ? array_column(Wishlist::getItems(), 'product_id') : [];
@@ -74,7 +77,7 @@ class ProductController extends Controller
         $this->view("productDetails", compact(
             'product', 
             'related', 
-            'reviews',
+            'reviewData',
             'reviewStats',
             'wishlistItems',
             'cartItems'
