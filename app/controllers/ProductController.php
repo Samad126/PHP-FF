@@ -10,7 +10,11 @@ class ProductController extends Controller
     public function index()
     {
         $products = Product::all();
-        $this->view("products", ['products' => $products]);
+        $topSellingProducts = Product::getTopSelling(3); // Get top 3 selling products for sidebar
+        $this->view("products", [
+            'products' => $products,
+            'topSellingProducts' => $topSellingProducts
+        ]);
     }
 
     public function show($id)
@@ -22,7 +26,8 @@ class ProductController extends Controller
         }
         
         $related = Product::getRelated($id);
+        $topSellingProducts = Product::getTopSelling(3); // Get top 3 selling products for sidebar
         
-        $this->view("productDetails", compact('product', 'related'));
+        $this->view("productDetails", compact('product', 'related', 'topSellingProducts'));
     }
 }

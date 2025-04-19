@@ -140,38 +140,25 @@
     <!-- aside Widget -->
     <div class="aside">
         <h3 class="aside-title">Top selling</h3>
+        <?php foreach ($topSellingProducts as $product): ?>
         <div class="product-widget">
             <div class="product-img">
-                <img src="/assets/img/product01.png" alt="">
+                <img src="<?= htmlspecialchars($product['image_url']) ?>" alt="<?= htmlspecialchars($product['name']) ?>">
             </div>
             <div class="product-body">
-                <p class="product-category">Category</p>
-                <h3 class="product-name"><a href="/products/1">product name goes here</a></h3>
-                <h4 class="product-price">$980.00 <del class="product-old-price">$990.00</del></h4>
+                <p class="product-category"><?= htmlspecialchars($product['category_name']) ?></p>
+                <h3 class="product-name">
+                    <a href="/products/<?= $product['id'] ?>"><?= htmlspecialchars($product['name']) ?></a>
+                </h3>
+                <h4 class="product-price">
+                    $<?= number_format($product['price'], 2) ?>
+                    <?php if (isset($product['old_price']) && $product['old_price'] > $product['price']): ?>
+                    <del class="product-old-price">$<?= number_format($product['old_price'], 2) ?></del>
+                    <?php endif; ?>
+                </h4>
             </div>
         </div>
-
-        <div class="product-widget">
-            <div class="product-img">
-                <img src="/assets/img/product02.png" alt="">
-            </div>
-            <div class="product-body">
-                <p class="product-category">Category</p>
-                <h3 class="product-name"><a href="/products/1">product name goes here</a></h3>
-                <h4 class="product-price">$980.00 <del class="product-old-price">$990.00</del></h4>
-            </div>
-        </div>
-
-        <div class="product-widget">
-            <div class="product-img">
-                <img src="/assets/img/product03.png" alt="">
-            </div>
-            <div class="product-body">
-                <p class="product-category">Category</p>
-                <h3 class="product-name"><a href="/products/1">product name goes here</a></h3>
-                <h4 class="product-price">$980.00 <del class="product-old-price">$990.00</del></h4>
-            </div>
-        </div>
+        <?php endforeach; ?>
     </div>
     <!-- /aside Widget -->
 </div>
